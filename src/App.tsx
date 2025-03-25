@@ -95,7 +95,7 @@ function PlumberPage() {
 function CarpenterPage() {
   return (
     <div style={{ fontFamily: "Arial, sans-serif", textAlign: "center", margin: "50px" }}>
-      <h1>Electrician Issue Form</h1>
+      <h1>Carpenter Issue Form</h1>
       <form style={{ display: "inline-block", textAlign: "left", maxWidth: "400px", width: "100%" }}>
         
         <div id="div1" style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
