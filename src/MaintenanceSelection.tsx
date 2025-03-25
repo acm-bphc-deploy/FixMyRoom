@@ -1,6 +1,6 @@
 import "./MaintenanceSelection.css";
 import { useNavigate } from "react-router-dom";
-import Footer from "./Footer";
+
 
 export default function MaintenanceSelection() {
   const navigate = useNavigate();
