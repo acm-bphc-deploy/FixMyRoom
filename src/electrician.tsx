@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "./supabaseClient"; // Import Supabase
+import { supabase } from "./supabaseClient"; // Ensure this file is set up correctly
 
 export default function ElectricianPage() {
   const [name, setName] = useState("");
@@ -10,20 +10,14 @@ export default function ElectricianPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Insert data into Supabase
+   
     const { data, error } = await supabase.from("electrician_requests").insert([
-      {
-        name,
-        email,
-        hostel,
-        roomNo,
-        issue,
-      },
+      { name, email, hostel, roomNo, issue },
     ]);
 
     if (error) {
       console.error("Error submitting request:", error.message);
+      alert("Error submitting request: " + error.message);
     } else {
       alert("Request submitted successfully!");
     }
@@ -36,7 +30,7 @@ export default function ElectricianPage() {
         onSubmit={handleSubmit}
         style={{ display: "inline-block", textAlign: "left", maxWidth: "400px", width: "100%" }}
       >
-        <div id="div1" style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
+        <div style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
           <label><strong>1) Name:</strong></label><br />
           <input
             type="text"
@@ -48,7 +42,7 @@ export default function ElectricianPage() {
           />
         </div>
 
-        <div id="div2" style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
+        <div style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
           <label><strong>2) BITS Mail:</strong></label><br />
           <input
             type="email"
@@ -60,7 +54,7 @@ export default function ElectricianPage() {
           />
         </div>
 
-        <div id="div3" style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
+        <div style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
           <label><strong>3) Hostel:</strong></label><br />
           <select
             name="hostel"
@@ -82,7 +76,7 @@ export default function ElectricianPage() {
           </select>
         </div>
 
-        <div id="div4" style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
+        <div style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
           <label><strong>4) Room Number:</strong></label><br />
           <input
             type="text"
@@ -94,7 +88,7 @@ export default function ElectricianPage() {
           />
         </div>
 
-        <div id="div5" style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
+        <div style={{ marginBottom: "15px", border: "2px solid black", padding: "10px", borderRadius: "5px" }}>
           <label><strong>5) Describe your issue:</strong></label><br />
           <textarea
             name="issue"
