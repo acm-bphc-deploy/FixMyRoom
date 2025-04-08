@@ -1,5 +1,6 @@
 "use client"
 
+import jsPDF from "jspdf";
 import { useState, useEffect } from "react"
 import { supabase } from "./supabaseClient"
 import {
@@ -18,7 +19,7 @@ import {
     Hammer,
     ChevronDown,
     ChevronUp,
-    RefreshCw,
+    RefreshCw, 
     CheckCheck,
     Calendar,
 } from "lucide-react"
@@ -134,22 +135,31 @@ useEffect(() => {
     const completedRequests = requests.filter((r) => r.status === "completed").length
 
     // Handle status update
-    const updateStatus = (id: string, status: "pending" | "in-progress" | "completed") => {
-        setIsLoading(true)
-
-        // Simulate API call
-        setTimeout(() => {
-            const updatedRequests = requests.map((request) => (request.id === id ? { ...request, status } : request))
-
-            setRequests(updatedRequests)
-
-            if (selectedRequest && selectedRequest.id === id) {
-                setSelectedRequest({ ...selectedRequest, status })
+    const updateStatus = async (id: string, status: "pending" | "in-progress" | "completed") => {
+        setIsLoading(true);
+    
+        const { error } = await supabase
+            .from("maintenance_requests")
+            .update({ status })
+            .eq("id", id);
+    
+        if (error) {
+            console.error("Status update failed:", error);
+        } else {
+            const updatedRequests = requests.map((request) =>
+                request.id === id ? { ...request, status } : request
+            );
+            setRequests(updatedRequests);
+    
+            if (selectedRequest?.id === id) {
+                setSelectedRequest({ ...selectedRequest, status });
             }
-
-            setIsLoading(false)
-        }, 500)
-    }
+        }
+    
+        setIsLoading(false);
+    };
+    
+    
 
     // Handle staff assignment
     const assignStaff = (requestId: string, staffId: string) => {
@@ -176,34 +186,6 @@ useEffect(() => {
     }
 
     // Handle comment submission
-    const submitComment = () => {
-        if (!selectedRequest || !newComment.trim()) return
-
-        setIsLoading(true)
-
-        // Create new comment
-        const comment = {
-            id: `c${Date.now()}`,
-            text: newComment,
-            from: "admin" as const,
-            timestamp: new Date().toISOString(),
-        }
-
-        // Simulate API call
-        setTimeout(() => {
-            const updatedRequests = requests.map((request) =>
-                request.id === selectedRequest.id ? { ...request, comments: [...request.comments, comment] } : request,
-            )
-
-            setRequests(updatedRequests)
-            setSelectedRequest({
-                ...selectedRequest,
-                comments: [...selectedRequest.comments, comment],
-            })
-            setNewComment("")
-            setIsLoading(false)
-        }, 500)
-    }
 
     // Reset filters
     const resetFilters = () => {
@@ -293,6 +275,39 @@ useEffect(() => {
                 return <Badge variant="outline">Unknown</Badge>
         }
     }
+    const [selectedBuilding, setSelectedBuilding] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState<"pending" | "in-progress" | "completed">("pending");
+
+    const handlePrintFilteredRequests = (building: string, status: "pending" | "in-progress" | "completed") => {
+        const doc = new jsPDF();
+        const filtered = requests.filter(
+          (req) => req.building === building && req.status === status
+        );
+      
+        if (filtered.length === 0) {
+          alert("No matching requests found.");
+          return;
+        }
+      
+        filtered.forEach((request, index) => {
+          if (index > 0) doc.addPage();
+      
+          doc.setFontSize(16);
+          doc.text("Maintenance Request Details", 20, 20);
+      
+          doc.setFontSize(12);
+          doc.text(`ID: ${request.id}`, 20, 40);
+          doc.text(`Name: ${request.name}`, 20, 50);
+          doc.text(`Phone: ${request.phone}`, 20, 60);
+          doc.text(`Category: ${request.category}`, 20, 70);
+          doc.text(`Status: ${request.status}`, 20, 80);
+          doc.text("Description:", 20, 90);
+          doc.text(doc.splitTextToSize(request.problem ?? "N/A", 170), 20, 100);
+        });
+      
+        doc.save(`${building}-${status}.pdf`);
+      };
+      
 
     const getBuildingName = (buildingCode: string) => {
         const buildings: Record<string, string> = {
@@ -525,7 +540,7 @@ useEffect(() => {
                                                 </div>
 
                                                 <div className="flex justify-between items-center mt-2">
-                                                    <div className="text-xs text-gray-500">{formatDate(request.dateSubmitted)}</div>
+                                                    
                                                     <div className="flex items-center">{getPriorityBadge(request.priority)}</div>
                                                 </div>
                                             </div>
@@ -553,16 +568,14 @@ useEffect(() => {
                                                 <span>Request {selectedRequest.id}</span>
                                                 <span className="ml-3">{getStatusBadge(selectedRequest.status)}</span>
                                             </CardTitle>
-                                            <div className="text-sm text-gray-500">
-                                                Submitted: {formatDate(selectedRequest.dateSubmitted)}
-                                            </div>
+                                            
                                         </div>
                                     </CardHeader>
                                     <CardContent>
                                         <Tabs defaultValue="details">
                                             <TabsList className="mb-4">
                                                 <TabsTrigger value="details">Details</TabsTrigger>
-                                                <TabsTrigger value="communication">Communication</TabsTrigger>
+                                                
                                                 <TabsTrigger value="actions">Actions</TabsTrigger>
                                             </TabsList>
 
@@ -595,6 +608,7 @@ useEffect(() => {
                                                             <p className="text-sm text-gray-500">Room Number</p>
                                                             <p className="font-medium">{selectedRequest.roomNo}</p>
                                                         </div>
+                                                        
                                                     </div>
                                                 </div>
 
@@ -646,68 +660,47 @@ useEffect(() => {
                                                         )}
                                                     </div>
                                                 </div>
-                                            </TabsContent>
+                                                <div className="flex gap-4 mb-4">
+                                                <select
+                                                    value={selectedBuilding}
+                                                    onChange={(e) => setSelectedBuilding(e.target.value)}
+                                                    className="border px-4 py-2 rounded"
+                                                >
+                                                    <option value="">Select Building</option>
+                                                    <option value="Viswakarma Bhavan">Viswakarma Bhavan</option>
+                                                    <option value="Valmiki Bhavan">Valmiki Bhavan</option>
+                                                    <option value="Gautham Bhavan">Gautham Bhavan</option>
+                                                    <option value="Gandhi Bhavan">Gandhi Bhavan</option>
+                                                    <option value="Budh Bhavan">Budh Bhavan</option>
+                                                    <option value="Malaivya Bhavan">Malaivya Bhavan</option>
+                                                    <option value="Meera Bhavan">Meera Bhavan</option>
+                                                    <option value="Shankar Bhavan">Shankar Bhavan</option>
+                                                    <option value="Ram Bhavan">Ram Bhavan</option>
+                                                    <option value="Krishna Bhavan">Krishna Bhavan</option>
 
-                                            <TabsContent value="communication" className="space-y-4">
-                                                <div className="bg-gray-50 p-4 rounded-lg max-h-[calc(100vh-400px)] overflow-y-auto">
-                                                    {selectedRequest.comments.length > 0 ? (
-                                                        <div className="space-y-4">
-                                                            {selectedRequest.comments.map((comment) => (
-                                                                <div
-                                                                    key={comment.id}
-                                                                    className={`p-4 rounded-lg ${comment.from === "admin"
-                                                                            ? "bg-blue-50 border border-blue-100 ml-8"
-                                                                            : "bg-white border border-gray-200 mr-8"
-                                                                        }`}
-                                                                >
-                                                                    <div className="flex justify-between items-center mb-2">
-                                                                        <div className="font-medium">
-                                                                            {comment.from === "admin" ? "Admin Response" : "Student Comment"}
-                                                                        </div>
-                                                                        <div className="text-xs text-gray-500">{formatDate(comment.timestamp)}</div>
-                                                                    </div>
-                                                                    <p className="text-gray-700">{comment.text}</p>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-center py-8 text-gray-500">
-                                                            <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                                                            <p>No comments yet</p>
-                                                        </div>
-                                                    )}
+                                                    {/* Add more if needed */}
+                                                </select>
+
+                                                <select
+                                                    value={selectedStatus}
+                                                    onChange={(e) => setSelectedStatus(e.target.value as "pending" | "in-progress" | "completed")}
+                                                    className="border px-4 py-2 rounded"
+                                                >
+                                                    
+                                                    <option value="pending">Pending</option>
+                                                    <option value="in-progress">In-Progress</option>
+                                                    <option value="completed">Completed</option>
+                                                </select>
+
+                                                <button
+                                                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                                                    onClick={() => handlePrintFilteredRequests(selectedBuilding, selectedStatus)}
+                                                >
+                                                    Print All
+                                                </button>
                                                 </div>
 
-                                                <div className="mt-4">
-                                                    <h3 className="text-lg font-medium mb-3">Add Response</h3>
-                                                    <div className="space-y-3">
-                                                        <Textarea
-                                                            placeholder="Type your response here..."
-                                                            value={newComment}
-                                                            onChange={(e) => setNewComment(e.target.value)}
-                                                            rows={4}
-                                                        />
-                                                        <Button
-                                                            onClick={submitComment}
-                                                            disabled={!newComment.trim() || isLoading}
-                                                            className="w-full"
-                                                        >
-                                                            {isLoading ? (
-                                                                <>
-                                                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                                                    Sending...
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <MessageSquare className="w-4 h-4 mr-2" />
-                                                                    Send Response
-                                                                </>
-                                                            )}
-                                                        </Button>
-                                                    </div>
-                                                </div>
                                             </TabsContent>
-
                                             <TabsContent value="actions" className="space-y-6">
                                                 {/* Status Update */}
                                                 <div>
@@ -766,6 +759,37 @@ useEffect(() => {
                                                         ))}
                                                     </div>
                                                 </div>
+                                                <div className="flex gap-4 mb-4">
+                                                <select
+                                                    value={selectedBuilding}
+                                                    onChange={(e) => setSelectedBuilding(e.target.value)}
+                                                    className="border px-4 py-2 rounded"
+                                                >
+                                                    <option value="">Select Building</option>
+                                                    <option value="Gandhi Bhavan">Gandhi Bhavan</option>
+                                                    <option value="Valmiki Bhavan">Valmiki Bhavan</option>
+                                                    <option value="Viswakarma Bhavan">Viswakarma Bhavan</option>
+                                                    {/* Add more if needed */}
+                                                </select>
+
+                                                <select
+                                                    value={selectedStatus}
+                                                    onChange={(e) => setSelectedStatus(e.target.value as "pending" | "in-progress" | "completed")}
+                                                    className="border px-4 py-2 rounded"
+                                                >
+                                                    <option value="pending">Pending</option>
+                                                    <option value="in-progress">In-Progress</option>
+                                                    <option value="completed">Completed</option>
+                                                </select>
+
+                                                <button
+                                                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                                                    onClick={() => handlePrintFilteredRequests(selectedBuilding, selectedStatus)}
+                                                >
+                                                    Print All
+                                                </button>
+                                                </div>
+
                                             </TabsContent>
                                         </Tabs>
                                     </CardContent>

@@ -1,5 +1,5 @@
 "use client"
-
+import jsPDF from "jspdf";
 import { useState, useEffect } from "react"
 import { supabase } from "./supabaseClient"
 import {
@@ -215,6 +215,22 @@ const maintenanceStaff: StaffMember[] = [
     { id: "staff3", name: "Lisa Johnson", role: "Electrician", avatar: "" },
     { id: "staff4", name: "James Smith", role: "General Maintenance", avatar: "" },
 ]
+const handlePrint = (request: MaintenanceRequest) => {
+    const doc = new jsPDF();
+  
+    doc.setFontSize(16);
+    doc.text("Maintenance Request Details", 20, 20);
+  
+    doc.setFontSize(12);
+    doc.text(`ID: ${request.id}`, 20, 40);
+    doc.text(`Name: ${request.name}`, 20, 50);
+    doc.text(`Phone: ${request.phone}`, 20, 60);
+    doc.text(`Category: ${request.category}`, 20, 70);
+    doc.text("Description:", 20, 80);
+    doc.text(doc.splitTextToSize(request.problem ?? "N/A", 170), 20, 90);
+  
+    doc.save(`${request.id}.pdf`);
+  };
 
 export default function AdminDashboard() {
     // State
@@ -382,6 +398,9 @@ export default function AdminDashboard() {
     const getPriorityBadge = (priority: string) => {
         switch (priority) {
             case "high":
+                <Badge variant="default" className="bg-amre-500">
+                        High
+                    </Badge>
                 return <Badge variant="destructive">High</Badge>
             case "medium":
                 return (
@@ -680,7 +699,7 @@ export default function AdminDashboard() {
                                         <Tabs defaultValue="details">
                                             <TabsList className="mb-4">
                                                 <TabsTrigger value="details">Details</TabsTrigger>
-                                                <TabsTrigger value="communication">Communication</TabsTrigger>
+                                                
                                                 <TabsTrigger value="actions">Actions</TabsTrigger>
                                             </TabsList>
 
@@ -713,6 +732,8 @@ export default function AdminDashboard() {
                                                             <p className="text-sm text-gray-500">Room Number</p>
                                                             <p className="font-medium">{selectedRequest.roomNo}</p>
                                                         </div>
+                                                        <Button onClick={() => handlePrint(selectedRequest!)}>Print as PDF</Button>
+
                                                     </div>
                                                 </div>
 
@@ -766,66 +787,7 @@ export default function AdminDashboard() {
                                                 </div>
                                             </TabsContent>
 
-                                            <TabsContent value="communication" className="space-y-4">
-                                                <div className="bg-gray-50 p-4 rounded-lg max-h-[calc(100vh-400px)] overflow-y-auto">
-                                                    {selectedRequest.comments.length > 0 ? (
-                                                        <div className="space-y-4">
-                                                            {selectedRequest.comments.map((comment) => (
-                                                                <div
-                                                                    key={comment.id}
-                                                                    className={`p-4 rounded-lg ${comment.from === "admin"
-                                                                            ? "bg-blue-50 border border-blue-100 ml-8"
-                                                                            : "bg-white border border-gray-200 mr-8"
-                                                                        }`}
-                                                                >
-                                                                    <div className="flex justify-between items-center mb-2">
-                                                                        <div className="font-medium">
-                                                                            {comment.from === "admin" ? "Admin Response" : "Student Comment"}
-                                                                        </div>
-                                                                        <div className="text-xs text-gray-500">{formatDate(comment.timestamp)}</div>
-                                                                    </div>
-                                                                    <p className="text-gray-700">{comment.text}</p>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-center py-8 text-gray-500">
-                                                            <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                                                            <p>No comments yet</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                <div className="mt-4">
-                                                    <h3 className="text-lg font-medium mb-3">Add Response</h3>
-                                                    <div className="space-y-3">
-                                                        <Textarea
-                                                            placeholder="Type your response here..."
-                                                            value={newComment}
-                                                            onChange={(e) => setNewComment(e.target.value)}
-                                                            rows={4}
-                                                        />
-                                                        <Button
-                                                            onClick={submitComment}
-                                                            disabled={!newComment.trim() || isLoading}
-                                                            className="w-full"
-                                                        >
-                                                            {isLoading ? (
-                                                                <>
-                                                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                                                    Sending...
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <MessageSquare className="w-4 h-4 mr-2" />
-                                                                    Send Response
-                                                                </>
-                                                            )}
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </TabsContent>
-
+                                            
                                             <TabsContent value="actions" className="space-y-6">
                                                 {/* Status Update */}
                                                 <div>

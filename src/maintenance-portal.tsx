@@ -183,13 +183,11 @@ export default function MaintenancePortal() {
             .select()
             .single()
     
-            if (error) {
-                console.error("Supabase Insert Error:", error.message, error.details)
-                alert("Form submission failed: " + error.message)
-                setIsSubmitting(false)
-                return
-              }
-              
+        if (error || !insertData) {
+            alert("Form submission failed")
+            setIsSubmitting(false)
+            return
+        }
     
         setIsSubmitting(false)
         setRequestId(`MR-${insertData.id}`)
