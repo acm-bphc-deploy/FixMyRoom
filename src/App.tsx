@@ -11,9 +11,9 @@ export default function App() {
       <Routes>
         
         
-        <Route path="/" element={<MaintenancePortal/>} />
-        <Route path="/" element={<AdminDashboard/>} />
         
+        <Route path="/" element={<AdminDashboard/>} />
+        <Route path="/" element={<MaintenancePortal/>} />
       </Routes>
     </Router>
   );

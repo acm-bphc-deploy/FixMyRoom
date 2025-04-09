@@ -161,6 +161,24 @@ useEffect(() => {
     
     
 
+const handlePrint = (request: MaintenanceRequest) => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text("Maintenance Request Details", 20, 20);
+
+  doc.setFontSize(12);
+  doc.text(`ID: ${request.id}`, 20, 40);
+  doc.text(`Name: ${request.name}`, 20, 50);
+  doc.text(`Phone: ${request.phone}`, 20, 60);
+  doc.text(`Category: ${request.category}`, 20, 70);
+  doc.text("Description:", 20, 80);
+  doc.text(doc.splitTextToSize(request.problem ?? "N/A", 170), 20, 90);
+
+  doc.save(`${request.id}.pdf`);
+};
+
+
     // Handle staff assignment
     const assignStaff = (requestId: string, staffId: string) => {
         const staffMember = maintenanceStaff.find((staff) => staff.id === staffId)
@@ -275,40 +293,8 @@ useEffect(() => {
                 return <Badge variant="outline">Unknown</Badge>
         }
     }
-    const [selectedBuilding, setSelectedBuilding] = useState("");
-    const [selectedStatus, setSelectedStatus] = useState<"pending" | "in-progress" | "completed">("pending");
-
-    const handlePrintFilteredRequests = (building: string, status: "pending" | "in-progress" | "completed") => {
-        const doc = new jsPDF();
-        const filtered = requests.filter(
-          (req) => req.building === building && req.status === status
-        );
+    
       
-        if (filtered.length === 0) {
-          alert("No matching requests found.");
-          return;
-        }
-      
-        filtered.forEach((request, index) => {
-          if (index > 0) doc.addPage();
-      
-          doc.setFontSize(16);
-          doc.text("Maintenance Request Details", 20, 20);
-      
-          doc.setFontSize(12);
-          doc.text(`ID: ${request.id}`, 20, 40);
-          doc.text(`Name: ${request.name}`, 20, 50);
-          doc.text(`Phone: ${request.phone}`, 20, 60);
-          doc.text(`Category: ${request.category}`, 20, 70);
-          doc.text(`Status: ${request.status}`, 20, 80);
-          doc.text("Description:", 20, 90);
-          doc.text(doc.splitTextToSize(request.problem ?? "N/A", 170), 20, 100);
-        });
-      
-        doc.save(`${building}-${status}.pdf`);
-      };
-      
-
     const getBuildingName = (buildingCode: string) => {
         const buildings: Record<string, string> = {
             "Viswakarma Bhavan": "Viswakarma Bhavan",
@@ -502,11 +488,13 @@ useEffect(() => {
                                             </SelectContent>
                                         </Select>
                                     </div>
+                                    
 
                                     <Button variant="outline" size="sm" onClick={resetFilters} className="w-full">
                                         <Filter className="w-4 h-4 mr-2" /> Reset Filters
                                     </Button>
                                 </div>
+                                
 
                                 {/* Request List */}
                                 <div className="space-y-3 mt-4 max-h-[calc(100vh-400px)] overflow-y-auto pr-1">
@@ -540,7 +528,7 @@ useEffect(() => {
                                                 </div>
 
                                                 <div className="flex justify-between items-center mt-2">
-                                                    
+                                                    <div className="text-xs text-gray-500">{formatDate(request.dateSubmitted)}</div>
                                                     <div className="flex items-center">{getPriorityBadge(request.priority)}</div>
                                                 </div>
                                             </div>
@@ -660,45 +648,9 @@ useEffect(() => {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-4 mb-4">
-                                                <select
-                                                    value={selectedBuilding}
-                                                    onChange={(e) => setSelectedBuilding(e.target.value)}
-                                                    className="border px-4 py-2 rounded"
-                                                >
-                                                    <option value="">Select Building</option>
-                                                    <option value="Viswakarma Bhavan">Viswakarma Bhavan</option>
-                                                    <option value="Valmiki Bhavan">Valmiki Bhavan</option>
-                                                    <option value="Gautham Bhavan">Gautham Bhavan</option>
-                                                    <option value="Gandhi Bhavan">Gandhi Bhavan</option>
-                                                    <option value="Budh Bhavan">Budh Bhavan</option>
-                                                    <option value="Malaivya Bhavan">Malaivya Bhavan</option>
-                                                    <option value="Meera Bhavan">Meera Bhavan</option>
-                                                    <option value="Shankar Bhavan">Shankar Bhavan</option>
-                                                    <option value="Ram Bhavan">Ram Bhavan</option>
-                                                    <option value="Krishna Bhavan">Krishna Bhavan</option>
+                                                <Button onClick={() => handlePrint(selectedRequest)}>Print as PDF</Button>
 
-                                                    {/* Add more if needed */}
-                                                </select>
 
-                                                <select
-                                                    value={selectedStatus}
-                                                    onChange={(e) => setSelectedStatus(e.target.value as "pending" | "in-progress" | "completed")}
-                                                    className="border px-4 py-2 rounded"
-                                                >
-                                                    
-                                                    <option value="pending">Pending</option>
-                                                    <option value="in-progress">In-Progress</option>
-                                                    <option value="completed">Completed</option>
-                                                </select>
-
-                                                <button
-                                                    className="bg-blue-600 text-white px-4 py-2 rounded"
-                                                    onClick={() => handlePrintFilteredRequests(selectedBuilding, selectedStatus)}
-                                                >
-                                                    Print All
-                                                </button>
-                                                </div>
 
                                             </TabsContent>
                                             <TabsContent value="actions" className="space-y-6">
@@ -759,36 +711,7 @@ useEffect(() => {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-4 mb-4">
-                                                <select
-                                                    value={selectedBuilding}
-                                                    onChange={(e) => setSelectedBuilding(e.target.value)}
-                                                    className="border px-4 py-2 rounded"
-                                                >
-                                                    <option value="">Select Building</option>
-                                                    <option value="Gandhi Bhavan">Gandhi Bhavan</option>
-                                                    <option value="Valmiki Bhavan">Valmiki Bhavan</option>
-                                                    <option value="Viswakarma Bhavan">Viswakarma Bhavan</option>
-                                                    {/* Add more if needed */}
-                                                </select>
-
-                                                <select
-                                                    value={selectedStatus}
-                                                    onChange={(e) => setSelectedStatus(e.target.value as "pending" | "in-progress" | "completed")}
-                                                    className="border px-4 py-2 rounded"
-                                                >
-                                                    <option value="pending">Pending</option>
-                                                    <option value="in-progress">In-Progress</option>
-                                                    <option value="completed">Completed</option>
-                                                </select>
-
-                                                <button
-                                                    className="bg-blue-600 text-white px-4 py-2 rounded"
-                                                    onClick={() => handlePrintFilteredRequests(selectedBuilding, selectedStatus)}
-                                                >
-                                                    Print All
-                                                </button>
-                                                </div>
+                                                
 
                                             </TabsContent>
                                         </Tabs>
