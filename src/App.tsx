@@ -10,10 +10,10 @@ export default function App() {
     <Router>
       <Routes>
         
-        
-        
-        <Route path="/" element={<AdminDashboard/>} />
-        <Route path="/" element={<MaintenancePortal/>} />
+      
+      <Route path="/" element={<AdminDashboard/>} />
+      <Route path="/" element={<MaintenancePortal/>} />        
+
       </Routes>
     </Router>
   );

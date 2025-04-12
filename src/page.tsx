@@ -2,6 +2,7 @@
 
 import jsPDF from "jspdf";
 import { useState, useEffect } from "react"
+import autoTable from "jspdf-autotable";
 import { supabase } from "./supabaseClient"
 import {
     Building,
@@ -12,7 +13,7 @@ import {
     CheckCircle,
     AlertCircle,
     PenToolIcon as Tool,
-    Loader2,
+    
     MessageSquare,
     Zap,
     Droplet,
@@ -29,7 +30,7 @@ import { Button } from "./components/button"
 import { Input } from "./components/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/select"
-import { Textarea } from "./components/textarea"
+
 import { Avatar, AvatarFallback, AvatarImage } from "./components/avatar"
 
 // Types
@@ -98,36 +99,30 @@ useEffect(() => {
     const [newComment, setNewComment] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
-
+    
     // Filter and sort requests
     const filteredRequests = requests
-        .filter((request) => {
-            // Search query
-            const matchesSearch =
-                request.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                request.studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                request.id.toLowerCase().includes(searchQuery.toLowerCase())
-
-            // Status filter
-            const matchesStatus = statusFilter === "all" || request.status === statusFilter
-
-            // Building filter
-            const matchesBuilding = buildingFilter === "all" || request.building === buildingFilter
-
-            // Category filter
-            const matchesCategory = categoryFilter === "all" || request.category === categoryFilter
-
-            // Priority filter
-            const matchesPriority = priorityFilter === "all" || request.priority === priorityFilter
-
-            return matchesSearch && matchesStatus && matchesBuilding && matchesCategory && matchesPriority
-        })
-        .sort((a, b) => {
-            const dateA = new Date(a.dateSubmitted).getTime()
-            const dateB = new Date(b.dateSubmitted).getTime()
-            return sortOrder === "desc" ? dateB - dateA : dateA - dateB
-        })
-
+    .filter((request) => {
+      const search = searchQuery.toLowerCase()
+  
+      const matchesSearch =
+        (request.name?.toLowerCase() ?? "").includes(search) ||
+        (request.studentId?.toLowerCase() ?? "").includes(search) ||
+        (String(request.id) ?? "").includes(search)
+  
+      const matchesStatus = statusFilter === "all" || request.status === statusFilter
+      const matchesBuilding = buildingFilter === "all" || request.building === buildingFilter
+      const matchesCategory = categoryFilter === "all" || request.category === categoryFilter
+      const matchesPriority = priorityFilter === "all" || request.priority === priorityFilter
+  
+      return matchesSearch && matchesStatus && matchesBuilding && matchesCategory && matchesPriority
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.dateSubmitted ?? "").getTime()
+      const dateB = new Date(b.dateSubmitted ?? "").getTime()
+      return sortOrder === "desc" ? dateB - dateA : dateA - dateB
+    })
+  
     // Statistics
     const totalRequests = requests.length
     const pendingRequests = requests.filter((r) => r.status === "pending").length
@@ -268,7 +263,40 @@ const handlePrint = (request: MaintenanceRequest) => {
                 return <Badge variant="outline">Unknown</Badge>
         }
     }
+    
 
+
+    
+    
+    const handlePrintAll = (filteredRequests: MaintenanceRequest[]) => {
+      const doc = new jsPDF();
+    
+      doc.setFontSize(16);
+      doc.text("Filtered Maintenance Requests", 14, 20);
+    
+      autoTable(doc, {
+        startY: 30,
+        head: [["Name", "Phone", "Building", "Room", "Category", "Priority", "Description"]],
+        body: filteredRequests.map((req) => [
+          
+          req.name,
+          req.phone,
+          req.building,
+          req.roomNo,
+          req.category,
+          req.priority,
+          req.problem,
+        ]),
+        styles: {
+          cellPadding: 2,
+          fontSize: 8,
+        },
+      });
+    
+      doc.save("filtered_requests.pdf");
+    };
+    
+    
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "pending":
@@ -428,67 +456,68 @@ const handlePrint = (request: MaintenanceRequest) => {
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                         />
                                     </div>
-
                                     <div className="grid grid-cols-2 gap-2">
-                                        <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">All Statuses</SelectItem>
-                                                <SelectItem value="pending">Pending</SelectItem>
-                                                <SelectItem value="in-progress">In Progress</SelectItem>
-                                                <SelectItem value="completed">Completed</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-blue-100/50 backdrop-blur-md shadow-lg">
+                                        <SelectItem className="hover:bg-blue-200/50" value="all">All Statuses</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="pending">Pending</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="in-progress">In Progress</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="completed">Completed</SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
-                                        <Select value={buildingFilter} onValueChange={setBuildingFilter}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Building" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">All Buildings</SelectItem>
-                                                <SelectItem value="Viswakarma Bhavan">Viswakarma Bhavan</SelectItem>
-                                                <SelectItem value="Valmiki Bhavan">Valmiki Bhavan</SelectItem>
-                                                <SelectItem value="Gautham Bhavan">Gautham Bhavan</SelectItem>
-                                                <SelectItem value="Gandhi Bhavan">Gandhi Bhavan</SelectItem>
-                                                <SelectItem value="Budh Bhavan">Budh Bhavan</SelectItem>
-                                                <SelectItem value="Malaivya Bhavan">Malaivya Bhavan</SelectItem>
-                                                <SelectItem value="Meera Bhavan">Meera Bhavan</SelectItem>
-                                                <SelectItem value="Shankar Bhavan">Shankar Bhavan</SelectItem>
-                                                <SelectItem value="Ram Bhavan">Ram Bhavan</SelectItem>
-                                                <SelectItem value="Krishna Bhavan">Krishna Bhavan</SelectItem>
-
-                                            </SelectContent>
-                                        </Select>
+                                    <Select value={buildingFilter} onValueChange={setBuildingFilter}>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="Building" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-blue-100/50 backdrop-blur-md shadow-lg">
+                                        <SelectItem className="hover:bg-blue-200/50" value="all">All Buildings</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Viswakarma Bhavan">Viswakarma Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Valmiki Bhavan">Valmiki Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Gautham Bhavan">Gautham Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Gandhi Bhavan">Gandhi Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Budh Bhavan">Budh Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Malaivya Bhavan">Malaivya Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Meera Bhavan">Meera Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Shankar Bhavan">Shankar Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Ram Bhavan">Ram Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Krishna Bhavan">Krishna Bhavan</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-2">
-                                        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Category" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">All Categories</SelectItem>
-                                                <SelectItem value="electricity">Electricity</SelectItem>
-                                                <SelectItem value="plumbing">Plumbing</SelectItem>
-                                                <SelectItem value="carpentry">Carpentry</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="Category" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-blue-100/50 backdrop-blur-md shadow-lg">
+                                        <SelectItem className="hover:bg-blue-200/50" value="all">All Categories</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="electricity">Electricity</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="plumbing">Plumbing</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="carpentry">Carpentry</SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
-                                        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Priority" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">All Priorities</SelectItem>
-                                                <SelectItem value="high">High</SelectItem>
-                                                <SelectItem value="medium">Medium</SelectItem>
-                                                <SelectItem value="low">Low</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                    <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="Priority" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-blue-100/50 backdrop-blur-md shadow-lg">
+                                        <SelectItem className="hover:bg-blue-200/50" value="all">All Priorities</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="high">High</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="medium">Medium</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="low">Low</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     </div>
-                                    
+                                    <Button onClick={() => handlePrintAll(filteredRequests)} variant="outline">
+                                    🖨️ Print All
+                                    </Button>
+
 
                                     <Button variant="outline" size="sm" onClick={resetFilters} className="w-full">
                                         <Filter className="w-4 h-4 mr-2" /> Reset Filters
