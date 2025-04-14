@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, type FormEvent, type ChangeEvent } from "react"
+import { useEffect } from 'react';
 import {
     Building,
     User,
@@ -39,7 +40,21 @@ export default function MaintenancePortal() {
         visitTime: "",
         termsCheck: false,
     })
-
+    const [userDetails, setUserDetails] = useState({
+        fullName: '',
+        email: ''
+      });
+    useEffect(() => {
+        (async () => {
+            const { data: { user } } = await supabase.auth.getUser();  // Get logged-in user from Supabase
+            if (user) {
+                setUserDetails({
+                    fullName: user.user_metadata.full_name || '',  // Set full name
+                    email: user.email || ''  // Set email address
+                });
+            }
+        })();
+    }, []);
     // Image preview state
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [hasImage, setHasImage] = useState(false)
@@ -340,37 +355,14 @@ export default function MaintenancePortal() {
                                                 id="name"
                                                 name="name"
                                                 required
-                                                value={formData.name}
+                                                value={userDetails.fullName}
+                                                readOnly
                                                 onChange={handleInputChange}
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none"
                                                 placeholder="Enter your full name"
                                             />
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            Please enter your name as registered in hostel records
-                                        </div>
-                                    </div>
-
-                                    {/* Student ID Field */}
-                                    <div>
-                                        <label htmlFor="studentId" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Student ID
-                                        </label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <IdCard className="w-5 h-5 text-gray-400" />
-                                            </div>
-                                            <input
-                                                type="text"
-                                                id="studentId"
-                                                name="studentId"
-                                                required
-                                                value={formData.studentId}
-                                                onChange={handleInputChange}
-                                                className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none"
-                                                placeholder="Enter your student ID"
-                                            />
-                                        </div>
+                                        
                                     </div>
 
                                     {/* Email Field */}
@@ -387,7 +379,8 @@ export default function MaintenancePortal() {
                                                 id="email"
                                                 name="email"
                                                 required
-                                                value={formData.email}
+                                                value={userDetails.email}
+                                                readOnly
                                                 onChange={handleInputChange}
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none"
                                                 placeholder="Enter your email address"
