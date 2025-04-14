@@ -1,4 +1,1 @@
-Hello.
-I am under water.
-Please help me.
-It's too cold.
+Welcome to the hostel helpline website for bphc.
