@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useState, useRef, type FormEvent, type ChangeEvent } from "react"
 import { useEffect } from 'react';
 import {
@@ -29,7 +30,7 @@ export default function MaintenancePortal() {
     const [currentStep, setCurrentStep] = useState(1)
     const [formData, setFormData] = useState({
         name: "",
-        studentId: "",
+        
         email: "",
         phone: "",
         building: "",
@@ -41,7 +42,7 @@ export default function MaintenancePortal() {
         termsCheck: false,
     })
     const [userDetails, setUserDetails] = useState({
-        fullName: '',
+        name: '',
         email: ''
       });
     useEffect(() => {
@@ -49,9 +50,14 @@ export default function MaintenancePortal() {
             const { data: { user } } = await supabase.auth.getUser();  // Get logged-in user from Supabase
             if (user) {
                 setUserDetails({
-                    fullName: user.user_metadata.full_name || '',  // Set full name
+                    name: user.user_metadata.name || '',  // Set full name
                     email: user.email || ''  // Set email address
                 });
+                setFormData(prev => ({
+                    ...prev,
+                    name: user.user_metadata.name || '',
+                    email: user.email || ''
+                }));
             }
         })();
     }, []);
@@ -122,7 +128,7 @@ export default function MaintenancePortal() {
     const nextStep = () => {
         // Basic validation
         if (currentStep === 1) {
-            if (!formData.name || !formData.studentId || !formData.email || !formData.building || !formData.roomNo) {
+            if ( !formData.building || !formData.roomNo) {
                 alert("Please fill in all required fields")
                 return
             }
@@ -144,76 +150,58 @@ export default function MaintenancePortal() {
 
     // Form submission
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
     
         if (!formData.termsCheck) {
-            alert("Please accept the terms to continue")
-            return
+            alert("Please accept the terms to continue");
+            return;
         }
     
-        setIsSubmitting(true)
+        setIsSubmitting(true);
     
-        const buildingMap: Record<string, string> = {
-            "Viswakarma Bhavan": "Viswakarma Bhavan",
-            "Valmiki Bhavan": "Valmiki Bhavan",
-            "Gautham Bhavan": "Gautham Bhavan",
-            "Gandhi Bhavan": "Gandhi Bhavan",
-            "Budh Bhavan": "Budh Bhavan",
-            "Malaivya Bhavan": "Malaivya Bhavan",
-            "Meera Bhavan": "Meera Bhavan",
-            "Shankar Bhavan": "Shankar Bhavan",
-            "Ram Bhavan": "Ram Bhavan",
-            "Krishna Bhavan": "Krishna Bhavan"
-        }
+        try {
+            const { data, error } = await supabase
+                .from('maintenance_requests') // Replace with actual table name
+                .insert([
+                    {
+                        name: userDetails.name,
+                        email: userDetails.email,
+                        phone: formData.phone,
+                        building: formData.building,
+                        roomNo: formData.roomNo,  
+                        category: formData.category,
+                        problem: formData.problem,
+                        priority: formData.priority,
+                        visitTime: formData.visitTime,
+                        termsCheck: formData.termsCheck,
+                        
+                        
+
+                        // Add any other formData fields you're saving
+                    }
+                ]);
     
-        let imageUrl = null
-    
-        if (fileInputRef.current?.files?.[0]) {
-            const file = fileInputRef.current.files[0]
-            const fileExt = file.name.split(".").pop()
-            const fileName = `${Date.now()}.${fileExt}`
-    
-            const { data, error } = await supabase.storage.from("maintenance-images").upload(fileName, file)
             if (error) {
-                alert("Image upload failed")
-                setIsSubmitting(false)
-                return
+                console.error("Supabase error details:", error);
+    alert(`Error: ${error.message}`);
+    return;
             }
     
-            const { data: publicUrl } = supabase.storage.from("maintenance-images").getPublicUrl(fileName)
-            imageUrl = publicUrl.publicUrl
+            alert("Form submitted successfully!");
+            // Optional: reset form or navigate somewhere
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            alert("Something went wrong!");
+        } finally {
+            setIsSubmitting(false); // ✅ This is the key to stop the spinner
         }
-    
-        formData.building = buildingMap[formData.building] || formData.building
-    
-        const { data: insertData, error } = await supabase
-            .from("maintenance_requests")
-            .insert([
-                {
-                    ...formData,
-                    
-                    imageUrl,
-                },
-            ])
-            .select()
-            .single()
-    
-        if (error || !insertData) {
-            alert("Form submission failed")
-            setIsSubmitting(false)
-            return
-        }
-    
-        setIsSubmitting(false)
-        setRequestId(`MR-${insertData.id}`)
-        setShowSuccess(true)
-    }
+    };
     
     // Reset form
     const resetForm = () => {
         setFormData({
             name: "",
-            studentId: "",
+            
             email: "",
             phone: "",
             building: "",
@@ -355,8 +343,8 @@ export default function MaintenancePortal() {
                                                 id="name"
                                                 name="name"
                                                 required
-                                                value={userDetails.fullName}
-                                                readOnly
+                                                value={userDetails.name}
+                                                
                                                 onChange={handleInputChange}
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none"
                                                 placeholder="Enter your full name"
@@ -380,7 +368,7 @@ export default function MaintenancePortal() {
                                                 name="email"
                                                 required
                                                 value={userDetails.email}
-                                                readOnly
+                                                
                                                 onChange={handleInputChange}
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none"
                                                 placeholder="Enter your email address"
@@ -581,43 +569,8 @@ export default function MaintenancePortal() {
                                     </div>
                                 </div>
 
-                                {/* Image Upload */}
-                                <div className="mb-5">
-                                    <label htmlFor="issueImage" className="block text-sm font-medium text-gray-700 mb-1">
-                                        Upload Image (Optional)
-                                    </label>
-                                    <div className="relative">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="file"
-                                                id="issueImage"
-                                                name="issueImage"
-                                                accept="image/*"
-                                                className="hidden"
-                                                ref={fileInputRef}
-                                                onChange={handleImageUpload}
-                                            />
-                                            <label
-                                                htmlFor="issueImage"
-                                                className="flex items-center justify-center p-4 rounded-lg border-2 border-dashed border-gray-300 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all duration-300"
-                                            >
-                                                <Upload className="w-6 h-6 text-gray-400 mr-3" />
-                                                <span className="text-gray-600">Click or drag to upload an image</span>
-                                            </label>
-                                        </div>
-                                        {imagePreview && (
-                                            <img
-                                                src={imagePreview || "/placeholder.svg"}
-                                                alt="Preview"
-                                                className="mt-3 max-h-48 rounded-lg border"
-                                            />
-                                        )}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-1">
-                                        Image helps maintenance staff understand the issue better
-                                    </div>
-                                </div>
-
+                                
+                                
                                 {/* Best Time for Visit */}
                                 <div className="mb-5">
                                     <label htmlFor="visitTime" className="block text-sm font-medium text-gray-700 mb-1">
@@ -682,10 +635,7 @@ export default function MaintenancePortal() {
                                             <p className="text-sm text-gray-500">Name</p>
                                             <p className="font-medium text-gray-800">{formData.name || "-"}</p>
                                         </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Student ID</p>
-                                            <p className="font-medium text-gray-800">{formData.studentId || "-"}</p>
-                                        </div>
+                                        
                                         <div>
                                             <p className="text-sm text-gray-500">Email</p>
                                             <p className="font-medium text-gray-800">{formData.email || "-"}</p>
@@ -720,10 +670,7 @@ export default function MaintenancePortal() {
                                             <p className="text-sm text-gray-500">Preferred Visit Time</p>
                                             <p className="font-medium text-gray-800">{getVisitTimeName()}</p>
                                         </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Image</p>
-                                            <p className="font-medium text-gray-800">{hasImage ? "Image uploaded" : "No image uploaded"}</p>
-                                        </div>
+                                        
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Description</p>

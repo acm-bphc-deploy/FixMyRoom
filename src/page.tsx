@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react";
 import jsPDF from "jspdf";
 import { useState, useEffect } from "react"
 import autoTable from "jspdf-autotable";
@@ -69,10 +70,10 @@ type StaffMember = {
 
 
 const maintenanceStaff: StaffMember[] = [
-    { id: "staff1", name: "Mike Wilson", role: "Plumber", avatar: "" },
-    { id: "staff2", name: "Robert Brown", role: "Carpenter", avatar: "" },
-    { id: "staff3", name: "Lisa Johnson", role: "Electrician", avatar: "" },
-    { id: "staff4", name: "James Smith", role: "General Maintenance", avatar: "" },
+    { id: "staff1", name: "Ramu Uncle", role: "Plumber", avatar: "" },
+    { id: "staff2", name: "Chintu bhaiyya", role: "Carpenter", avatar: "" },
+    { id: "staff3", name: "Chinnu didi", role: "Electrician", avatar: "" },
+    { id: "staff4", name: "Venkatamma", role: "General Maintenance", avatar: "" },
 ]
 
 export default function AdminDashboard() {
@@ -198,7 +199,7 @@ const handlePrint = (request: MaintenanceRequest) => {
         }, 500)
     }
 
-    // Handle comment submission
+   
 
     // Reset filters
     const resetFilters = () => {
@@ -764,4 +765,3 @@ const handlePrint = (request: MaintenanceRequest) => {
         </div>
     )
 }
-

@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+import React, { StrictMode } from 'react'
 import './app/globals.css';
 import { createRoot } from 'react-dom/client'
 import 'bootstrap/dist/css/bootstrap.css'

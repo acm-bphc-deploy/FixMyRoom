@@ -8,7 +8,7 @@ const RedirectAfterLogin = () => {
   useEffect(() => {
     const checkUserAndRedirect = async () => {
       const { data: { user }, error } = await supabase.auth.getUser()
-
+      
       if (error || !user) {
         console.error("Error fetching user:", error)
         return
@@ -16,7 +16,7 @@ const RedirectAfterLogin = () => {
 
     //warden bhai ka mail daalo idhar
       const adminEmails = [
-        "f20231291@hyderabad.bits-pilani.ac.in",
+        "",
        
       ]
 
