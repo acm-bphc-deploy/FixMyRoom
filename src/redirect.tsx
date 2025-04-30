@@ -16,7 +16,7 @@ const RedirectAfterLogin = () => {
 
     //warden bhai ka mail daalo idhar
       const adminEmails = [
-        "",
+        "f20231291@hyderabad.bits-pilani.ac.in",
        
       ]
 

@@ -748,11 +748,6 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
-"@types/cookie@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/@types/cookie/-/cookie-0.6.0.tgz"
-  integrity sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==
-
 "@types/estree@^1.0.6", "@types/estree@1.0.6":
   version "1.0.6"
   resolved "https://registry.npmjs.org/@types/estree/-/estree-1.0.6.tgz"
@@ -769,6 +764,13 @@
   integrity sha512-I6LPUvlRH+O6VRUqYOcMudhaIdUVWfsjnZavnsraHvpBwaEyMN29ry+0UVJhImYL16xsscu0aske3yA+uPOWfw==
   dependencies:
     undici-types "~6.20.0"
+
+"@types/nodemailer@^6.4.17":
+  version "6.4.17"
+  resolved "https://registry.npmjs.org/@types/nodemailer/-/nodemailer-6.4.17.tgz"
+  integrity sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==
+  dependencies:
+    "@types/node" "*"
 
 "@types/phoenix@^1.5.4":
   version "1.6.6"
@@ -1406,6 +1408,11 @@ fastq@^1.6.0:
   dependencies:
     reusify "^1.0.4"
 
+fdir@^6.4.4:
+  version "6.4.4"
+  resolved "https://registry.npmjs.org/fdir/-/fdir-6.4.4.tgz"
+  integrity sha512-1NZP+GK4GfuAv3PqKvxQRDMjdSRZjnkq7KfhlNrCNNlZ0ygQFpebfrnfnq/W7fpUnAv9aGWmY1zKx7FYL3gwhg==
+
 fflate@^0.8.1:
   version "0.8.2"
   resolved "https://registry.npmjs.org/fflate/-/fflate-0.8.2.tgz"
@@ -1792,6 +1799,11 @@ node-releases@^2.0.19:
   resolved "https://registry.npmjs.org/node-releases/-/node-releases-2.0.19.tgz"
   integrity sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==
 
+nodemailer@^6.10.1:
+  version "6.10.1"
+  resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-6.10.1.tgz"
+  integrity sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==
+
 normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz"
@@ -1887,6 +1899,11 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.3.1:
   version "2.3.1"
   resolved "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
+
+"picomatch@^3 || ^4", picomatch@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/picomatch/-/picomatch-4.0.2.tgz"
+  integrity sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==
 
 pify@^2.3.0:
   version "2.3.0"
@@ -2005,18 +2022,17 @@ react-remove-scroll@^2.6.3:
     use-sidecar "^1.1.3"
 
 react-router-dom@^7.4.0:
-  version "7.4.0"
-  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-7.4.0.tgz"
-  integrity sha512-VlksBPf3n2bijPvnA7nkTsXxMAKOj+bWp4R9c3i+bnwlSOFAGOkJkKhzy/OsRkWaBMICqcAl1JDzh9ZSOze9CA==
+  version "7.5.2"
+  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-7.5.2.tgz"
+  integrity sha512-yk1XW8Fj7gK7flpYBXF3yzd2NbX6P7Kxjvs2b5nu1M04rb5pg/Zc4fGdBNTeT4eDYL2bvzWNyKaIMJX/RKHTTg==
   dependencies:
-    react-router "7.4.0"
+    react-router "7.5.2"
 
-react-router@7.4.0:
-  version "7.4.0"
-  resolved "https://registry.npmjs.org/react-router/-/react-router-7.4.0.tgz"
-  integrity sha512-Y2g5ObjkvX3VFeVt+0CIPuYd9PpgqCslG7ASSIdN73LwA1nNWzcMLaoMRJfP3prZFI92svxFwbn7XkLJ+UPQ6A==
+react-router@7.5.2:
+  version "7.5.2"
+  resolved "https://registry.npmjs.org/react-router/-/react-router-7.5.2.tgz"
+  integrity sha512-9Rw8r199klMnlGZ8VAsV/I8WrIF6IyJ90JQUdboupx1cdkgYqwnrYjH+I/nY/7cA1X5zia4mDJqH36npP7sxGQ==
   dependencies:
-    "@types/cookie" "^0.6.0"
     cookie "^1.0.1"
     set-cookie-parser "^2.6.0"
     turbo-stream "2.4.0"
@@ -2087,7 +2103,7 @@ rgbcolor@^1.0.1:
   resolved "https://registry.npmjs.org/rgbcolor/-/rgbcolor-1.0.1.tgz"
   integrity sha512-9aZLIrhRaD97sgVhtJOW6ckOEh6/GnvQtdVNfdZ6s67+3/XwLS9lBcQYzEEhYVeUowN7pRzMLsyGhK2i/xvWbw==
 
-rollup@^4.30.1:
+rollup@^4.34.9:
   version "4.36.0"
   resolved "https://registry.npmjs.org/rollup/-/rollup-4.36.0.tgz"
   integrity sha512-zwATAXNQxUcd40zgtQG0ZafcRK4g004WtEl7kbuhTWPvf07PsfohXl39jVUvPF7jvNAIkKPQ2XrsDlWuxBd++Q==
@@ -2306,6 +2322,14 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
+tinyglobby@^0.2.13:
+  version "0.2.13"
+  resolved "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.13.tgz"
+  integrity sha512-mEwzpUgrLySlveBwEVDMKk5B57bhLPYovRfPAXD5gA/98Opn0rCDj3GtLwFvCvH5RK9uPCExUROW5NjDwvqkxw==
+  dependencies:
+    fdir "^6.4.4"
+    picomatch "^4.0.2"
+
 to-regex-range@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/to-regex-range/-/to-regex-range-5.0.1.tgz"
@@ -2407,13 +2431,16 @@ utrie@^1.0.2:
     base64-arraybuffer "^1.0.2"
 
 "vite@^4 || ^5 || ^6", "vite@^4.2.0 || ^5.0.0 || ^6.0.0", vite@^6.2.0:
-  version "6.2.5"
-  resolved "https://registry.npmjs.org/vite/-/vite-6.2.5.tgz"
-  integrity sha512-j023J/hCAa4pRIUH6J9HemwYfjB5llR2Ps0CWeikOtdR8+pAURAk0DoJC5/mm9kd+UgdnIy7d6HE4EAvlYhPhA==
+  version "6.3.3"
+  resolved "https://registry.npmjs.org/vite/-/vite-6.3.3.tgz"
+  integrity sha512-5nXH+QsELbFKhsEfWLkHrvgRpTdGJzqOZ+utSdmPTvwHmvU6ITTm3xx+mRusihkcI8GeC7lCDyn3kDtiki9scw==
   dependencies:
     esbuild "^0.25.0"
+    fdir "^6.4.4"
+    picomatch "^4.0.2"
     postcss "^8.5.3"
-    rollup "^4.30.1"
+    rollup "^4.34.9"
+    tinyglobby "^0.2.13"
   optionalDependencies:
     fsevents "~2.3.3"
 
