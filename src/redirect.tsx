@@ -1,45 +1,45 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient";
+import { supabase } from "./supabaseClient"; // make sure the path is correct
 
 const RedirectAfterLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handleOAuthRedirect = async () => {
-      // Step 1: Exchange token from URL hash
+    const handleRedirect = async () => {
+      // 1. Exchange URL hash for session
       const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(window.location.hash);
 
       if (exchangeError) {
-        console.error("Session exchange failed:", exchangeError.message);
+        console.error("❌ Session exchange failed:", exchangeError.message);
         return;
       }
 
-      // Step 2: Get user info
+      // 2. Get logged in user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        console.error("Error fetching user:", userError);
+        console.error("❌ Could not get user:", userError?.message);
         return;
       }
 
-      // Step 3: Redirect based on email
-      const adminEmails = [
-        "f20231291@hyderabad.bits-pilani.ac.in", // your warden/admin
-      ];
+      console.log("✅ Logged in as:", user.email);
 
-      if (user.email && adminEmails.includes(user.email)) {
+      // 3. Redirect based on role
+      const adminEmails = ["f20231291@hyderabad.bits-pilani.ac.in"];
+
+      if (adminEmails.includes(user.email ?? "")) {
         navigate("/AdminDashboard");
       } else {
         navigate("/MaintenancePortal");
       }
     };
 
-    handleOAuthRedirect();
+    handleRedirect();
   }, [navigate]);
 
   return (
-    <div style={{ textAlign: "center", marginTop: "2rem" }}>
+    <div style={{ textAlign: "center", marginTop: "3rem" }}>
       <h2>Logging you in...</h2>
     </div>
   );
