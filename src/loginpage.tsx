@@ -22,7 +22,7 @@ export default function LoginPage() {
           
           hd: 'hyderabad.bits-pilani.ac.in',
         },
-        redirectTo: `${window.location.origin}/redirect`,
+        redirectTo: "https://fixmyroom.netlify.app/redirect",
       },
     })
   
