@@ -18,7 +18,8 @@ export default function LoginPage() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/redirect`,
+      redirectTo: "https://fixmyroom.netlify.app/redirect",
+
       queryParams: {
         prompt: 'consent',
         access_type: 'offline',

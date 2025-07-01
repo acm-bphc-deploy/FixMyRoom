@@ -7,47 +7,43 @@ const Redirect = () => {
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    const handleRedirect = async () => {
-      console.log("🌐 Starting session exchange...");
+    const handleLogin = async () => {
+      console.log("➡️ redirect called:", window.location.href);
 
       const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(window.location.href);
 
       if (exchangeError) {
-        console.error("❌ Session exchange failed:", exchangeError.message);
-        setErrorMsg(`Session exchange failed: ${exchangeError.message}`);
+        console.error("Session exchange error:", exchangeError.message);
+        setErrorMsg(`Session exchange error: ${exchangeError.message}`);
         return;
       }
 
       const { data: { user }, error: userError } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        console.error("❌ User fetch failed:", userError?.message);
-        setErrorMsg(`User fetch failed: ${userError?.message || "No user found"}`);
+        console.error("Get user failed:", userError?.message);
+        setErrorMsg("No user returned");
         return;
       }
 
-      console.log("✅ Logged in as:", user.email);
+      console.log("Logged in user:", user.email);
 
-      const adminEmails = ["f20231291@hyderabad.bits-pilani.ac.in"];
+      const admins = ["f20231291@hyderabad.bits-pilani.ac.in"];
 
-      if (adminEmails.includes(user.email ?? "")) {
+      if (admins.includes(user.email ?? "")) {
         navigate("/AdminDashboard");
       } else {
         navigate("/MaintenancePortal");
       }
     };
 
-    handleRedirect();
+    handleLogin();
   }, [navigate]);
 
   return (
-    <div style={{ textAlign: "center", marginTop: "4rem" }}>
+    <div style={{ marginTop: "3rem", textAlign: "center" }}>
       <h2>Logging you in...</h2>
-      {errorMsg && (
-        <div style={{ color: "red", marginTop: "1rem" }}>
-          <strong>Error:</strong> {errorMsg}
-        </div>
-      )}
+      {errorMsg && <p style={{ color: "red" }}>⚠️ {errorMsg}</p>}
     </div>
   );
 };
