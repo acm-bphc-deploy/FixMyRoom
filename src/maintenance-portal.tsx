@@ -401,7 +401,7 @@ export default function MaintenancePortal() {
                                     {/* Building Selection */}
                                     <div>
                                         <label htmlFor="building" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Building
+                                            Hostel
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -416,7 +416,7 @@ export default function MaintenancePortal() {
                                                 className="w-full pl-10 pr-10 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none appearance-none bg-white"
                                             >
                                                 
-                                                <option value="" disabled>Select your building</option>
+                                                <option value="" disabled>Select your Hostel </option>
                                                 <option value="Viswakarma Bhavan">Viswakarma Bhavan</option>
                                                 <option value="Valmiki Bhavan">Valmiki Bhavan</option>
                                                 <option value="Gautham Bhavan">Gautham Bhavan</option>
