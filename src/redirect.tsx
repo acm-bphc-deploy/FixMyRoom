@@ -20,7 +20,7 @@ const RedirectAfterLogin = () => {
        
       ]
 
-      if (adminEmails.includes(user.email)) {
+      if (user.email && adminEmails.includes(user.email)) {
         navigate("/AdminDashboard")
       } else {
         navigate("/MaintenancePortal")
