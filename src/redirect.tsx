@@ -1,36 +1,37 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient"; // make sure the path is correct
+import { supabase } from "./supabaseClient";
 
-const RedirectAfterLogin = () => {
+const Redirect = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleRedirect = async () => {
-      // 1. Exchange URL hash for session
-      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(window.location.hash);
+      console.log("💡 redirect.tsx loaded, trying session exchange...");
+
+      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(window.location.href);
 
       if (exchangeError) {
         console.error("❌ Session exchange failed:", exchangeError.message);
         return;
       }
 
-      // 2. Get logged in user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        console.error("❌ Could not get user:", userError?.message);
+        console.error("❌ User fetch failed:", userError?.message);
         return;
       }
 
-      console.log("✅ Logged in as:", user.email);
+      console.log("✅ User:", user.email);
 
-      // 3. Redirect based on role
       const adminEmails = ["f20231291@hyderabad.bits-pilani.ac.in"];
 
       if (adminEmails.includes(user.email ?? "")) {
+        console.log("➡️ Redirecting to AdminDashboard");
         navigate("/AdminDashboard");
       } else {
+        console.log("➡️ Redirecting to MaintenancePortal");
         navigate("/MaintenancePortal");
       }
     };
@@ -38,11 +39,7 @@ const RedirectAfterLogin = () => {
     handleRedirect();
   }, [navigate]);
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "3rem" }}>
-      <h2>Logging you in...</h2>
-    </div>
-  );
+  return <div>Logging you in...</div>;
 };
 
-export default RedirectAfterLogin;
+export default Redirect;
