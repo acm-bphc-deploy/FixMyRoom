@@ -6,12 +6,26 @@ export default function RedirectPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        console.log("🟢 SIGNED_IN event received, redirecting...");
-        navigate("/MaintenancePortal");
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          const user = session.user;
+
+          const adminEmails = [
+            "f20231291@hyderabad.bits-pilani.ac.in",
+            // Add more admin emails here
+          ];
+
+          if (user?.email && adminEmails.includes(user.email)) {
+            console.log("🛠️ Admin signed in:", user.email);
+            navigate("/AdminDashboard");
+          } else {
+            console.log("🧑‍🔧 Student signed in:", user.email);
+            navigate("/MaintenancePortal");
+          }
+        }
       }
-    });
+    );
 
     return () => {
       subscription.unsubscribe();
