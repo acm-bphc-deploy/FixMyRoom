@@ -15,23 +15,25 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false)
   const loginWithGoogle = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        queryParams: {
-          
-          hd: 'hyderabad.bits-pilani.ac.in',
-        },
-        redirectTo: "https://fixmyroom.netlify.app/redirect",
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/redirect`,
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+        hd: "hyderabad.bits-pilani.ac.in",
       },
-    })
-  
-    if (error) {
-      console.error('Login error:', error.message)
-    } else {
-      console.log('Redirecting to Google OAuth...')
-    }
+    },
+  });
+
+  if (error) {
+    console.error("Login error:", error.message);
+  } else {
+    console.log("Redirecting to Google OAuth...");
   }
+};
+
     
 
   
