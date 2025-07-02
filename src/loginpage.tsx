@@ -43,7 +43,7 @@ export default function LoginPage() {
         <div className="container mx-auto flex items-center">
           <div className="flex items-center space-x-2">
             <Building className="h-6 w-6" />
-            <span className="font-bold text-lg">BPHC Hostel-Helpline</span>
+            <span className="font-bold text-lg">Fix My Room</span>
           </div>
         </div>
       </header>
@@ -125,7 +125,7 @@ export default function LoginPage() {
       {/* Footer */}
       <footer className="bg-gray-100 py-4 px-6 text-center text-sm text-gray-600">
         <div className="container mx-auto">
-          <p>© {new Date().getFullYear()} BITS Pilani, Hyderabad Campus. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ACM BITS Hyderabad</p>
         </div>
       </footer>
     </div>

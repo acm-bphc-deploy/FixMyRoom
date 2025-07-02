@@ -12,7 +12,7 @@ export default function RedirectPage() {
           const user = session.user;
 
           const adminEmails = [
-            "f20231291@hyderabad.bits-pilani.ac.in",
+            "20231291@hyderabad.bits-pilani.ac.in",
             // Add more admin emails here
           ];
 
