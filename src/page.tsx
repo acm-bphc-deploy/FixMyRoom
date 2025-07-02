@@ -543,7 +543,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                 <div className="flex justify-between items-start mb-2">
                                                     <div className="flex items-center">
                                                         {getCategoryIcon(request.category)}
-                                                        <span className="font-medium ml-2 text-gray-900">{request.id}</span>
+                                                        <span className="font-medium ml-2 text-gray-900">{request.category}</span>
                                                     </div>
                                                     {getStatusBadge(request.status)}
                                                 </div>
@@ -551,7 +551,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                 <div className="mb-2">
                                                     <div className="flex items-center text-sm text-gray-600">
                                                         <User className="w-4 h-4 mr-1" />
-                                                        <span>{request.name}</span>
+                                                        <span>{request.name} - {request.id}</span>
                                                     </div>
                                                     <div className="flex items-center text-sm text-gray-600 mt-1">
                                                         <Building className="w-4 h-4 mr-1" />
