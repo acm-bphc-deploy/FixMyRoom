@@ -541,25 +541,24 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                 onClick={() => setSelectedRequest(request)}
                                             >
                                                 <div className="flex justify-between items-start mb-2">
-                                                    <div className="flex items-center">
+                                                    <div>
+                                                        <div className="text-gray-900 font-semibold">
+                                                        {request.name} - {request.id}
+                                                        </div>
+                                                        <div className="flex items-center text-sm text-gray-600 mt-1">
                                                         {getCategoryIcon(request.category)}
-                                                        <span className="font-medium ml-2 text-gray-900">{request.category}</span>
+                                                        <span className="ml-2 capitalize">{request.category}</span>
+                                                        </div>
                                                     </div>
-                                                    {getStatusBadge(request.status)}
-                                                </div>
+                                                    <div>{getStatusBadge(request.status)}</div>
+                                                    </div>
 
-                                                <div className="mb-2">
+                                                    <div className="mb-2">
                                                     <div className="flex items-center text-sm text-gray-600">
-                                                        <User className="w-4 h-4 mr-1" />
-                                                        <span>{request.name} - {request.id}</span>
-                                                    </div>
-                                                    <div className="flex items-center text-sm text-gray-600 mt-1">
                                                         <Building className="w-4 h-4 mr-1" />
-                                                        <span>
-                                                            {getBuildingName(request.building)} - Room {request.roomNo}
-                                                        </span>
+                                                        <span>{getBuildingName(request.building)} - Room {request.roomNo}</span>
                                                     </div>
-                                                </div>
+                                                    </div>
 
                                                 <div className="flex justify-between items-center mt-2">
                                                     <div className="text-xs text-gray-500">{formatDate(request.created_at)}</div>
