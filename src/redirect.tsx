@@ -15,6 +15,12 @@ export default function RedirectPage() {
             "20231291@hyderabad.bits-pilani.ac.in",
             // Add more admin emails here
           ];
+      const allowedDomain = "hyderabad.bits-pilani.ac.in";
+      if (!user.email || !user.email.endsWith(`@${allowedDomain}`)) {
+        alert("Only BITS Hyderabad accounts are allowed.");
+        supabase.auth.signOut();  // force logout
+        return;
+      }
 
           if (user?.email && adminEmails.includes(user.email)) {
             console.log("🛠️ Admin signed in:", user.email);

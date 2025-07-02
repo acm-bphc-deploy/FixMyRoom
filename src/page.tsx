@@ -70,10 +70,10 @@ type StaffMember = {
 
 
 const maintenanceStaff: StaffMember[] = [
-    { id: "staff1", name: "Ramu Uncle", role: "Plumber", avatar: "" },
-    { id: "staff2", name: "Chintu bhaiyya", role: "Carpenter", avatar: "" },
-    { id: "staff3", name: "Chinnu didi", role: "Electrician", avatar: "" },
-    { id: "staff4", name: "Venkatamma", role: "General Maintenance", avatar: "" },
+    { id: "staff1", name: "Plumber", role: "Plumber", avatar: "" },
+    { id: "staff2", name: "Carpenter", role: "Carpenter", avatar: "" },
+    { id: "staff3", name: "Electrician", role: "Electrician", avatar: "" },
+    { id: "staff4", name: "General Maintenance", role: "General Maintenance", avatar: "" },
 ]
 
 export default function AdminDashboard() {
