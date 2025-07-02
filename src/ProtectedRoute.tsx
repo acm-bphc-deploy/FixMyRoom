@@ -16,7 +16,8 @@ export default function ProtectedRoute({ children, adminOnly = false }: { childr
       }
 
       const allowedDomain = "hyderabad.bits-pilani.ac.in";
-      const adminEmails = ["f20231291@hyderabad.bits-pilani.ac.in"]; // add more if needed
+      const adminEmails = ["f20231187@hyderabad.bits-pilani.ac.in",
+        "f20231291@hyderabad.bits-pilani.ac.in",]; // add more if needed
 
       if (!user.email?.endsWith(`@${allowedDomain}`)) {
         await supabase.auth.signOut();
