@@ -48,7 +48,7 @@ type MaintenanceRequest = {
     priority: string
     visitTime: string
     status: "pending" | "in-progress" | "completed"
-    dateSubmitted: string
+    created_at: string
     assignedTo?: string
     comments: {
         id: string
@@ -119,8 +119,8 @@ useEffect(() => {
       return matchesSearch && matchesStatus && matchesBuilding && matchesCategory && matchesPriority
     })
     .sort((a, b) => {
-      const dateA = new Date(a.dateSubmitted ?? "").getTime()
-      const dateB = new Date(b.dateSubmitted ?? "").getTime()
+      const dateA = new Date(a.created_at ?? "").getTime()
+      const dateB = new Date(b.created_at ?? "").getTime()
       return sortOrder === "desc" ? dateB - dateA : dateA - dateB
     })
   
@@ -562,7 +562,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                 </div>
 
                                                 <div className="flex justify-between items-center mt-2">
-                                                    <div className="text-xs text-gray-500">{formatDate(request.dateSubmitted)}</div>
+                                                    <div className="text-xs text-gray-500">{formatDate(request.created_at)}</div>
                                                     <div className="flex items-center">{getPriorityBadge(request.priority)}</div>
                                                 </div>
                                             </div>
