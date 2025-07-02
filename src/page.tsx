@@ -541,7 +541,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                 onClick={() => setSelectedRequest(request)}
                                             >
                                                 <div className="flex justify-between items-start mb-2">
-                                                    <div className="flex items-center text-sm text-gray-600">
+                                                    <div className="flex items-center text-sm text-gray-900">
                                                         <User className="w-4 h-4 mr-1" />
                                                         <span>{request.name} - {request.id}</span>
                                                     </div>
@@ -551,7 +551,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                 <div className="mb-2">
                                                     <div className="flex items-center">
                                                         {getCategoryIcon(request.category)}
-                                                        <span className="font-medium ml-2 text-gray-900">{request.category}</span>
+                                                        <span className="font-medium ml-2 text-gray-600">{request.category}</span>
                                                     </div>
                                                     
                                                     <div className="flex items-center text-sm text-gray-600 mt-1">
