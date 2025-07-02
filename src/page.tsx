@@ -594,7 +594,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                     </CardHeader>
                                     <CardContent>
                                         <Tabs defaultValue="details">
-                                            <TabsList className="mb-4">
+                                            <TabsList className="mb-4 bg-sky-100 hover:shadow-lg shadow transition-shadow duration-300 rounded-lg">
                                                 <TabsTrigger value="details">Details</TabsTrigger>
                                                 
                                                 <TabsTrigger value="actions">Actions</TabsTrigger>
@@ -609,10 +609,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                             <p className="text-sm text-gray-500">Name</p>
                                                             <p className="font-medium">{selectedRequest.name}</p>
                                                         </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Student ID</p>
-                                                            <p className="font-medium">{selectedRequest.studentId}</p>
-                                                        </div>
+                                                        
                                                         <div>
                                                             <p className="text-sm text-gray-500">Email</p>
                                                             <p className="font-medium">{selectedRequest.email}</p>
