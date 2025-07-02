@@ -12,8 +12,7 @@ export default function RedirectPage() {
           const user = session.user;
 
           const adminEmails = [
-            "aravind.sathesh@gmail.com",
-            "ananicharitha@gmail.com",
+            "f20231187@hyderabad.bits-pilani.ac.in",
             // Add more admin emails here
           ];
       const allowedDomain = "hyderabad.bits-pilani.ac.in";
