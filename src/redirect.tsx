@@ -6,37 +6,61 @@ export default function RedirectPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const adminEmails = [
+      "f20231187@hyderabad.bits-pilani.ac.in",
+      "f20231291@hyderabad.bits-pilani.ac.in",
+      // Add more admin emails here
+    ];
+    const allowedDomain = "hyderabad.bits-pilani.ac.in";
+
+    const handleRedirect = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      const user = session?.user;
+      if (!user || error) {
+        console.log("No active session or error:", error);
+        navigate("/"); // redirect to login
+        return;
+      }
+
+      if (!user.email || !user.email.endsWith(`@${allowedDomain}`)) {
+        alert("Only BITS Hyderabad accounts are allowed.");
+        await supabase.auth.signOut();
+        return;
+      }
+
+      if (adminEmails.includes(user.email)) {
+        console.log("🛠️ Admin signed in:", user.email);
+        navigate("/AdminDashboard");
+      } else {
+        console.log("🧑‍🔧 Student signed in:", user.email);
+        navigate("/MaintenancePortal");
+      }
+    };
+
+    handleRedirect();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
           const user = session.user;
 
-          const adminEmails = [
-            "f20231187@hyderabad.bits-pilani.ac.in",
-            "f20231291@hyderabad.bits-pilani.ac.in",
-            // Add more admin emails here
-          ];
-      const allowedDomain = "hyderabad.bits-pilani.ac.in";
-      if (!user.email || !user.email.endsWith(`@${allowedDomain}`)) {
-        alert("Only BITS Hyderabad accounts are allowed.");
-        supabase.auth.signOut();  // force logout
-        return;
-      }
+          if (!user.email || !user.email.endsWith(`@${allowedDomain}`)) {
+            alert("Only BITS Hyderabad accounts are allowed.");
+            await supabase.auth.signOut();
+            return;
+          }
 
-          if (user?.email && adminEmails.includes(user.email)) {
-            console.log("🛠️ Admin signed in:", user.email);
+          if (adminEmails.includes(user.email)) {
             navigate("/AdminDashboard");
           } else {
-            console.log("🧑‍🔧 Student signed in:", user.email);
             navigate("/MaintenancePortal");
           }
         }
       }
     );
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   return (
