@@ -394,14 +394,22 @@ export default function MaintenancePortal() {
                                                 <Phone className="w-5 h-5 text-gray-400" />
                                             </div>
                                             <input
-                                                type="tel"
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleInputChange}
-                                                className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none"
-                                                placeholder="Enter your phone number"
+                                            type="tel"
+                                            id="phone"
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                // Allow only digits and max 10 characters
+                                                if (/^\d{0,10}$/.test(value)) {
+                                                handleInputChange(e);
+                                                }
+                                            }}
+                                            className="w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none"
+                                            placeholder="Enter your 10-digit phone number"
+                                            maxLength={10}
                                             />
+
                                         </div>
                                     </div>
 
@@ -649,7 +657,7 @@ export default function MaintenancePortal() {
                                             <p className="font-medium text-gray-800">{formData.email || "-"}</p>
                                         </div>
                                         <div>
-                                            <p className="text-sm text-gray-500">Phone</p>
+                                        <p className="text-sm text-gray-500">Phone</p>
                                             <p className="font-medium text-gray-800">{formData.phone || "-"}</p>
                                         </div>
                                         <div>
