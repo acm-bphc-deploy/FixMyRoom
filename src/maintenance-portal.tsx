@@ -42,10 +42,26 @@ export default function MaintenancePortal() {
         visitTime: "",
         termsCheck: false,
     })
+    
     const [userDetails, setUserDetails] = useState({
         name: '',
         email: ''
       });
+    
+    const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
+
+    useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+        root.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+    } else {
+        root.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+    }
+    }, [darkMode]);
+
+      
     useEffect(() => {
         (async () => {
             const { data: { user } } = await supabase.auth.getUser();  // Get logged-in user from Supabase
@@ -65,7 +81,7 @@ export default function MaintenancePortal() {
     // Image preview state
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [hasImage, setHasImage] = useState(false)
-
+    
     // Loading and success states
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false)
@@ -280,6 +296,13 @@ export default function MaintenancePortal() {
                         <Tool className="w-8 h-8 mr-3" />
                         <h1 className="text-3xl font-bold">Campus Maintenance Portal</h1>
                     </div>
+                    <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className="fixed top-4 right-4 z-50 p-2 px-4 bg-white dark:bg-gray-800 text-black dark:text-white border rounded shadow"
+                    >
+                    {darkMode ? "🌙 Dark Mode" : "☀️ Light Mode"}
+                    </button>
+
                     <p className="text-center text-blue-100 mt-1 text-lg">Submit your maintenance issues for prompt resolution</p>
                     <div className="absolute bottom-0 left-0 w-full overflow-hidden" style={{ height: "40px" }}>
                         <svg viewBox="0 0 500 150" preserveAspectRatio="none" style={{ height: "100%", width: "100%" }}>
