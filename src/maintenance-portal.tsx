@@ -295,13 +295,14 @@ export default function MaintenancePortal() {
                     <div className="flex items-center justify-center mb-3">
                         <Tool className="w-8 h-8 mr-3" />
                         <h1 className="text-3xl font-bold">Campus Maintenance Portal</h1>
-                    </div>
-                    <button
+                        <button
                     onClick={() => setDarkMode(!darkMode)}
                     className="fixed top-4 right-4 z-50 p-2 px-4 bg-white dark:bg-gray-800 text-black dark:text-white border rounded shadow"
                     >
                     {darkMode ? "🌙 Dark Mode" : "☀️ Light Mode"}
                     </button>
+                    </div>
+                    
 
                     <p className="text-center text-blue-100 mt-1 text-lg">Submit your maintenance issues for prompt resolution</p>
                     <div className="absolute bottom-0 left-0 w-full overflow-hidden" style={{ height: "40px" }}>
