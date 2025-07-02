@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import MaintenancePortal from "./maintenance-portal";
 import AdminDashboard from "./page.tsx";;
 import LoginPage from "./loginpage.tsx";
-import RedirectAfterLogin from "./redirect";
+import RedirectPage from "./redirect";
 import ProtectedRoute from "./ProtectedRoute";
 
 
@@ -16,7 +16,7 @@ export default function App() {
         
       
       <Route path="/" element={<LoginPage />} />
-      <Route path="/redirect" element={<RedirectAfterLogin />} />
+      <Route path="/redirect" element={<RedirectPage />} />
       <Route
   path="/MaintenancePortal"
   element={
