@@ -594,11 +594,20 @@ const handlePrint = (request: MaintenanceRequest) => {
                                     </CardHeader>
                                     <CardContent>
                                         <Tabs defaultValue="details">
-                                            <TabsList className="mb-4 bg-sky-100 hover:shadow-lg shadow transition-shadow duration-300 rounded-lg">
-                                                <TabsTrigger value="details">Details</TabsTrigger>
-                                                
-                                                <TabsTrigger value="actions">Actions</TabsTrigger>
-                                            </TabsList>
+                                            <TabsList className="mb-4 bg-white shadow-md rounded-lg flex overflow-hidden border border-gray-300">
+                                                <TabsTrigger
+                                                    value="details"
+                                                    className="w-1/2 py-2 text-center text-gray-700 data-[state=active]:bg-blue-500 data-[state=active]:text-white border-r border-gray-300 transition-colors"
+                                                >
+                                                    Details
+                                                </TabsTrigger>
+                                                <TabsTrigger
+                                                    value="actions"
+                                                    className="w-1/2 py-2 text-center text-gray-700 data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-colors"
+                                                >
+                                                    Actions
+                                                </TabsTrigger>
+                                                </TabsList>
 
                                             <TabsContent value="details" className="space-y-6">
                                                 {/* Student Information */}
