@@ -453,15 +453,19 @@ const handlePrint = (request: MaintenanceRequest) => {
                             <CardContent>
                                 {/* Search and Filters */}
                                 <div className="mb-4 space-y-3">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                        <Input
-                                            placeholder="Search by name, ID or request number..."
-                                            className="pl-9"
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                        />
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Search className="text-gray-400 h-4 w-4" />
                                     </div>
+                                    <Input
+                                    placeholder="Search by name, ID or request number..."
+                                    className="pl-10"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                                
+
                                     <div className="grid grid-cols-2 gap-2">
                                     <Select value={statusFilter} onValueChange={setStatusFilter}>
                                         <SelectTrigger>
