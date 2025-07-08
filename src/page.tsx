@@ -24,6 +24,7 @@ import {
     RefreshCw, 
     CheckCheck,
     Calendar,
+    Printer,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "./components/card"
 import { Badge } from "./components/badge"
