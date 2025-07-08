@@ -328,8 +328,8 @@ const handlePrint = (request: MaintenanceRequest) => {
     }
     
       
-    const getBuildingName = (buildingCode: string) => {
-        const buildings: Record<string, string> = {
+    const getHostelName = (buildingCode: string) => {
+        const hostels: Record<string, string> = {
             "Viswakarma Bhavan": "Viswakarma Bhavan",
             "Valmiki Bhavan": "Valmiki Bhavan",
             "Gautham Bhavan": "Gautham Bhavan",
@@ -341,7 +341,7 @@ const handlePrint = (request: MaintenanceRequest) => {
             "Ram Bhavan": "Ram Bhavan",
             "Krishna Bhavan": "Krishna Bhavan"
         }
-        return buildings[buildingCode] || buildingCode
+        return hostels[buildingCode] || buildingCode
     }
 
     return (
@@ -476,10 +476,10 @@ const handlePrint = (request: MaintenanceRequest) => {
 
                                     <Select value={buildingFilter} onValueChange={setBuildingFilter}>
                                         <SelectTrigger>
-                                        <SelectValue placeholder="Building" />
+                                        <SelectValue placeholder="Hostels" />
                                         </SelectTrigger>
                                         <SelectContent className="bg-blue-100/50 backdrop-blur-md shadow-lg">
-                                        <SelectItem className="hover:bg-blue-200/50" value="all">All Buildings</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="all">Hostels</SelectItem>
                                         <SelectItem className="hover:bg-blue-200/50" value="Viswakarma Bhavan">Viswakarma Bhavan</SelectItem>
                                         <SelectItem className="hover:bg-blue-200/50" value="Valmiki Bhavan">Valmiki Bhavan</SelectItem>
                                         <SelectItem className="hover:bg-blue-200/50" value="Gautham Bhavan">Gautham Bhavan</SelectItem>
@@ -523,6 +523,9 @@ const handlePrint = (request: MaintenanceRequest) => {
                                     🖨️ Print All
                                     </Button>
 
+                                    <Button variant="outline" size="sm" onClick={() => window.print()} className="w-full">
+                                        <Printer className="w-4 h-4 mr-2" /> Print Report
+                                    </Button>
 
                                     <Button variant="outline" size="sm" onClick={resetFilters} className="w-full">
                                         <Filter className="w-4 h-4 mr-2" /> Reset Filters
@@ -556,7 +559,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                     <div className="mb-2">
                                                     <div className="flex items-center text-sm text-gray-600">
                                                         <Building className="w-4 h-4 mr-1" />
-                                                        <span>{getBuildingName(request.building)} - Room {request.roomNo}</span>
+                                                        <span>{getHostelName(request.building)} - Room {request.roomNo}</span>
                                                     </div>
                                                     </div>
 
@@ -629,7 +632,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                         </div>
                                                         <div>
                                                             <p className="text-sm text-gray-500">Building</p>
-                                                            <p className="font-medium">{getBuildingName(selectedRequest.building)}</p>
+                                                            <p className="font-medium">{getHostelName(selectedRequest.building)}</p>
                                                         </div>
                                                         <div>
                                                             <p className="text-sm text-gray-500">Room Number</p>
