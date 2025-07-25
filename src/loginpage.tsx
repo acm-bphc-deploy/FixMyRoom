@@ -15,23 +15,35 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false)
   const loginWithGoogle = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: "https://fixmyroom.acmbphc.in/redirect",
+    try {
+      setIsLoading(true);
+      console.log("Starting Google OAuth...");
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: "https://fixmyroom.acmbphc.in/redirect",
+          queryParams: {
+            prompt: 'consent',
+            access_type: 'offline',
+            hd: 'hyderabad.bits-pilani.ac.in'
+          }
+        }
+      });
 
-      queryParams: {
-        prompt: 'consent',
-        access_type: 'offline',
-        hd: 'hyderabad.bits-pilani.ac.in'
+      console.log("OAuth response:", data, error);
+
+      if (error) {
+        console.error('Login error:', error.message);
+        alert('Login failed: ' + error.message);
+        setIsLoading(false);
       }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      alert('An unexpected error occurred. Please try again.');
+      setIsLoading(false);
     }
-  });
-
-  if (error) {
-    console.error('Login error:', error.message);
-  }
-};
+  };
 
     
 
