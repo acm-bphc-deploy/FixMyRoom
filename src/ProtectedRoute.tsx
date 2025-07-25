@@ -9,13 +9,11 @@ export default function ProtectedRoute({ children, adminOnly = false }: { childr
 
   useEffect(() => {
     (async () => {
-      console.log("🛡️ ProtectedRoute: Checking user access...");
+      alert("ProtectedRoute: Checking user access...");
       const { data: { user }, error } = await supabase.auth.getUser();
-      console.log("🛡️ ProtectedRoute user:", user);
-      console.log("🛡️ ProtectedRoute error:", error);
       
       if (error || !user) {
-        console.log("🚨 ProtectedRoute: No user found, redirecting to login");
+        alert(`ProtectedRoute: No user found, redirecting to login. Error: ${error?.message || 'None'}`);
         navigate("/"); // not logged in
         return;
       }
