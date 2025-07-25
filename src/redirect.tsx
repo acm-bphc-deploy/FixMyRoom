@@ -10,85 +10,51 @@ export default function RedirectPage() {
     const adminEmails = [
       "f20231187@hyderabad.bits-pilani.ac.in",
       "f20231291@hyderabad.bits-pilani.ac.in",
-      // Add more admin emails here
     ];
     const allowedDomain = "hyderabad.bits-pilani.ac.in";
 
-    const handleRedirect = async () => {
-      try {
-        // First, handle the OAuth callback
-        const { data, error } = await supabase.auth.getSession();
-        console.log("Session data:", data);
-        console.log("Session error:", error);
-
-        if (error) {
-          console.error("Error getting session:", error);
-          navigate("/");
-          return;
-        }
-
-        if (!data.session) {
-          console.log("No session found, waiting for auth state change...");
-          return; // Let the auth state change listener handle it
-        }
-
-        const user = data.session.user;
-        console.log("User from session:", user);
-
-        if (!user) {
-          console.log("No user in session");
-          navigate("/");
-          return;
-        }
-
-        if (!user.email || !user.email.endsWith(`@${allowedDomain}`)) {
-          alert("Only BITS Hyderabad accounts are allowed.");
-          await supabase.auth.signOut();
-          navigate("/");
-          return;
-        }
-
-        if (adminEmails.includes(user.email)) {
-          console.log("🛠️ Admin signed in:", user.email);
-          navigate("/AdminDashboard");
-        } else {
-          console.log("🧑‍🔧 Student signed in:", user.email);
-          navigate("/MaintenancePortal");
-        }
-        setIsProcessing(false);
-      } catch (err) {
-        console.error("Error in handleRedirect:", err);
+    const handleUserRedirect = async (user: any) => {
+      if (!user?.email || !user.email.endsWith(`@${allowedDomain}`)) {
+        alert("Only BITS Hyderabad accounts are allowed.");
+        await supabase.auth.signOut();
         navigate("/");
+        return;
+      }
+
+      if (adminEmails.includes(user.email)) {
+        console.log("🛠️ Admin signed in:", user.email);
+        navigate("/AdminDashboard");
+      } else {
+        console.log("🧑‍🔧 Student signed in:", user.email);
+        navigate("/MaintenancePortal");
       }
     };
 
-    handleRedirect();
+    const tryGetSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      const session = data.session;
+      if (error) {
+        console.error("Error fetching session:", error.message);
+        navigate("/");
+        return;
+      }
+
+      if (session?.user) {
+        await handleUserRedirect(session.user);
+      } else {
+        console.log("Waiting for auth state change...");
+        // We wait for onAuthStateChange
+      }
+    };
+
+    tryGetSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("Auth state changed:", event, session);
-        
-        if (event === 'SIGNED_IN' && session) {
-          const user = session.user;
-          console.log("User signed in via auth state change:", user);
-
-          if (!user.email || !user.email.endsWith(`@${allowedDomain}`)) {
-            alert("Only BITS Hyderabad accounts are allowed.");
-            await supabase.auth.signOut();
-            navigate("/");
-            return;
-          }
-
-          if (adminEmails.includes(user.email)) {
-            console.log("🛠️ Admin signed in:", user.email);
-            navigate("/AdminDashboard");
-          } else {
-            console.log("🧑‍🔧 Student signed in:", user.email);
-            navigate("/MaintenancePortal");
-          }
-          setIsProcessing(false);
-        } else if (event === 'SIGNED_OUT') {
-          console.log("User signed out");
+        console.log("Auth event:", event);
+        if (event === "SIGNED_IN" && session?.user) {
+          await handleUserRedirect(session.user);
+        } else if (event === "SIGNED_OUT") {
           navigate("/");
         }
       }
