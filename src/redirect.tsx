@@ -14,35 +14,45 @@ export default function RedirectPage() {
     const allowedDomain = "hyderabad.bits-pilani.ac.in";
 
     const handleUserRedirect = async (user: any) => {
+      console.log("👤 Processing user:", user);
+      console.log("📧 User email:", user?.email);
+      
       if (!user?.email || !user.email.endsWith(`@${allowedDomain}`)) {
+        console.log("🚨 REDIRECTING TO LOGIN: Invalid email domain");
         alert("Only BITS Hyderabad accounts are allowed.");
         await supabase.auth.signOut();
         navigate("/");
         return;
       }
 
+      console.log("✅ Email domain valid, checking admin status...");
       if (adminEmails.includes(user.email)) {
-        console.log("🛠️ Admin signed in:", user.email);
+        console.log("🛠️ REDIRECTING TO ADMIN: Admin signed in:", user.email);
         navigate("/AdminDashboard");
       } else {
-        console.log("🧑‍🔧 Student signed in:", user.email);
+        console.log("🧑‍🔧 REDIRECTING TO PORTAL: Student signed in:", user.email);
         navigate("/MaintenancePortal");
       }
     };
 
     const tryGetSession = async () => {
+      console.log("🔍 Checking for existing session...");
       const { data, error } = await supabase.auth.getSession();
       const session = data.session;
+      console.log("📋 Session data:", session);
+      console.log("❌ Session error:", error);
+      
       if (error) {
-        console.error("Error fetching session:", error.message);
+        console.error("🚨 REDIRECTING TO LOGIN: Error fetching session:", error.message);
         navigate("/");
         return;
       }
 
       if (session?.user) {
+        console.log("✅ Found existing session, processing user...");
         await handleUserRedirect(session.user);
       } else {
-        console.log("Waiting for auth state change...");
+        console.log("⏳ No existing session, waiting for auth state change...");
         // We wait for onAuthStateChange
       }
     };
@@ -51,11 +61,17 @@ export default function RedirectPage() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("Auth event:", event);
+        console.log("🔄 Auth event:", event);
+        console.log("📋 Auth session:", session);
+        
         if (event === "SIGNED_IN" && session?.user) {
+          console.log("✅ SIGNED_IN event detected, processing user...");
           await handleUserRedirect(session.user);
         } else if (event === "SIGNED_OUT") {
+          console.log("🚪 SIGNED_OUT event, redirecting to login...");
           navigate("/");
+        } else {
+          console.log("❓ Other auth event or no user in session");
         }
       }
     );
