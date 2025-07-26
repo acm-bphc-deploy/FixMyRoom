@@ -22,8 +22,8 @@ export default function LoginPage() {
       // Clear any existing auth state to prevent conflicts
       await supabase.auth.signOut();
       
-      // Use dynamic redirect URL based on current location
-      const redirectTo = `${window.location.origin}/redirect`;
+      // Use configured redirect URL or fallback to current origin
+      const redirectTo = import.meta.env.VITE_REDIRECT_URL || `${window.location.origin}/redirect`;
       console.log("Redirect URL:", redirectTo);
       
       const { data, error } = await supabase.auth.signInWithOAuth({

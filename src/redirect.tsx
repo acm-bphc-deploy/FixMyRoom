@@ -34,16 +34,13 @@ export default function RedirectPage() {
     };
 
     const tryGetSession = async () => {
-      alert("Checking for existing session...");
       const { data, error } = await supabase.auth.getSession();
       const session = data.session;
-      
       if (error) {
         alert(`REDIRECTING TO LOGIN: Error fetching session: ${error.message}`);
         navigate("/");
         return;
       }
-
       if (session?.user) {
         alert("Found existing session, processing user...");
         await handleUserRedirect(session.user);
