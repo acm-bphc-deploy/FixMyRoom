@@ -1,10 +1,11 @@
 "use client"
 
-import React from "react";
+import React, { useMemo } from "react";
 import jsPDF from "jspdf";
 import { useState, useEffect } from "react"
 import autoTable from "jspdf-autotable";
 import { supabase } from "./supabaseClient"
+import { exportRequestsPdf } from "./lib/reports"
 import {
     Building,
     User,
@@ -25,6 +26,8 @@ import {
     CheckCheck,
     Calendar,
     Printer,
+    Trash2,
+    RotateCcw,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "./components/card"
 import { Badge } from "./components/badge"
@@ -46,8 +49,8 @@ type MaintenanceRequest = {
     roomNo: string
     category: string
     problem: string
-    priority: string
-    visitTime: string
+    priority: "low" | "medium" | "high"
+    visitTime: "morning" | "afternoon" | "evening" | "any"
     status: "pending" | "in-progress" | "completed"
     created_at: string
     assignedTo?: string
@@ -58,6 +61,7 @@ type MaintenanceRequest = {
         timestamp: string
     }[]
     hasImage: boolean
+    isDeleted?: boolean
 }
 
 type StaffMember = {
@@ -101,10 +105,17 @@ useEffect(() => {
     const [newComment, setNewComment] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
+    const [viewMode, setViewMode] = useState<"active" | "past">("active")
+
+    const isPast = (r: MaintenanceRequest) => r.isDeleted === true || r.status === "completed"
     
     // Filter and sort requests
-    const filteredRequests = requests
+    const filteredRequests = useMemo(() => {
+    return requests
     .filter((request) => {
+
+        const matchesView = viewMode === "active" ? !isPast(request) : isPast(request)
+
       const search = searchQuery.toLowerCase()
   
       const matchesSearch =
@@ -112,24 +123,28 @@ useEffect(() => {
         (request.studentId?.toLowerCase() ?? "").includes(search) ||
         (String(request.id) ?? "").includes(search)
   
-      const matchesStatus = statusFilter === "all" || request.status === statusFilter
+      // Status filter (skip when viewing past and isDeleted; still allow completed match)
+        const matchesStatus =
+          statusFilter === "all" ||
+          request.status === statusFilter ||
+          (viewMode === "past" && request.isDeleted === true && statusFilter === "all")
       const matchesBuilding = buildingFilter === "all" || request.building === buildingFilter
       const matchesCategory = categoryFilter === "all" || request.category === categoryFilter
       const matchesPriority = priorityFilter === "all" || request.priority === priorityFilter
   
-      return matchesSearch && matchesStatus && matchesBuilding && matchesCategory && matchesPriority
+     return matchesView && matchesSearch && matchesStatus && matchesBuilding && matchesCategory && matchesPriority
     })
     .sort((a, b) => {
       const dateA = new Date(a.created_at ?? "").getTime()
       const dateB = new Date(b.created_at ?? "").getTime()
       return sortOrder === "desc" ? dateB - dateA : dateA - dateB
-    })
+    })}, [requests, viewMode, searchQuery, statusFilter, buildingFilter, categoryFilter, priorityFilter, sortOrder])
   
     // Statistics
     const totalRequests = requests.length
-    const pendingRequests = requests.filter((r) => r.status === "pending").length
-    const inProgressRequests = requests.filter((r) => r.status === "in-progress").length
-    const completedRequests = requests.filter((r) => r.status === "completed").length
+    const pendingRequests = requests.filter((r) => r.status === "pending" && !r.isDeleted).length
+    const inProgressRequests = requests.filter((r) => r.status === "in-progress" && !r.isDeleted).length
+    const completedRequests = requests.filter((r) => r.status === "completed" && !r.isDeleted).length
 
     // Handle status update
     const updateStatus = async (id: string, status: "pending" | "in-progress" | "completed") => {
@@ -186,20 +201,40 @@ const handlePrint = (request: MaintenanceRequest) => {
 
         // Simulate API call
         setTimeout(() => {
-            const updatedRequests = requests.map((request) =>
-                request.id === requestId ? { ...request, assignedTo: staffMember.name } : request,
+            setRequests((prev) =>
+        prev.map((r) => (r.id === requestId ? { ...r, assignedTo: staffMember.name } : r)),
             )
 
-            setRequests(updatedRequests)
-
-            if (selectedRequest && selectedRequest.id === requestId) {
-                setSelectedRequest({ ...selectedRequest, assignedTo: staffMember.name })
-            }
+            setSelectedRequest((prev) => (prev && prev.id === requestId ? { ...prev, assignedTo: staffMember.name } : prev))
 
             setIsLoading(false)
-        }, 500)
+        }, 400)
     }
 
+
+        // Soft delete
+    const softDelete = (id: string) => {
+        if (!confirm("Soft delete this request? You can restore it from Past requests.")) return
+        setIsLoading(true)
+        setTimeout(() => {
+        setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, isDeleted: true } : r)))
+        setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, isDeleted: true } : prev))
+        setIsLoading(false)
+        }, 300)
+    }
+
+    // Reopen request (from completed or deleted -> pending and active)
+    const reopenRequest = (id: string) => {
+        setIsLoading(true)
+        setTimeout(() => {
+        setRequests((prev) =>
+            prev.map((r) => (r.id === id ? { ...r, status: "pending", isDeleted: false } : r)),
+        )
+        setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, status: "pending", isDeleted: false } : prev))
+        setViewMode("active")
+        setIsLoading(false)
+        }, 300)
+    }
    
 
     // Reset filters
@@ -303,8 +338,15 @@ const handlePrint = (request: MaintenanceRequest) => {
     };
     
     
-    const getStatusBadge = (status: string) => {
-        switch (status) {
+    const getStatusBadge = (request: MaintenanceRequest) => {
+    if (request.isDeleted) {
+      return (
+        <Badge variant="outline" className="text-gray-600 border-gray-300">
+          Deleted
+        </Badge>
+      )
+    }
+    switch (request.status) {
             case "pending":
                 return (
                     <Badge variant="outline" className="text-amber-600 border-amber-600">
@@ -344,6 +386,17 @@ const handlePrint = (request: MaintenanceRequest) => {
         }
         return hostels[buildingCode] || buildingCode
     }
+
+    const handleExportPdf = async () => {
+    // Map MaintenanceRequest[] to RequestForReport[]
+    const requestsForReport = filteredRequests.map((r) => ({
+      ...r,
+      dateSubmitted: r.created_at,
+    }));
+    await exportRequestsPdf(requestsForReport, {
+      title: `Maintenance Report — ${viewMode === "active" ? "Active" : "Past"} Requests`,
+    })
+  }
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -437,8 +490,34 @@ const handlePrint = (request: MaintenanceRequest) => {
                     <div className="lg:col-span-1">
                         <Card className="h-full">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-xl flex items-center justify-between">
-                                    <span>Maintenance Requests</span>
+                                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">Maintenance Requests</CardTitle>
+
+                  {/* View Switcher */}
+                  <div className="inline-flex rounded-md border overflow-hidden">
+                    <button
+                      aria-label="Show Active Requests"
+                      className={`px-3 py-1.5 text-sm ${
+                        viewMode === "active" ? "bg-blue-600 text-white" : "bg-white text-gray-700"
+                      }`}
+                      onClick={() => setViewMode("active")}
+                    >
+                      Active
+                    </button>
+                    <button
+                      aria-label="Show Past Requests"
+                      className={`px-3 py-1.5 text-sm border-l ${
+                        viewMode === "past" ? "bg-blue-600 text-white" : "bg-white text-gray-700"
+                      }`}
+                      onClick={() => setViewMode("past")}
+                    >
+                      Past
+                    </button>
+                  </div>
+                </div>
+
+                {/* Sort control */}
+                <div className="mt-3">
                                     <Button
                                         variant="ghost"
                                         size="sm"
@@ -448,7 +527,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                         <Calendar className="w-4 h-4 mr-1" />
                                         {sortOrder === "desc" ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
                                     </Button>
-                                </CardTitle>
+                                </div>
                             </CardHeader>
                             <CardContent>
                                 {/* Search and Filters */}
@@ -527,12 +606,9 @@ const handlePrint = (request: MaintenanceRequest) => {
                                         </SelectContent>
                                     </Select>
                                     </div>
-                                    <Button onClick={() => handlePrintAll(filteredRequests)} variant="outline">
-                                    🖨️ Print All
-                                    </Button>
 
-                                    <Button variant="outline" size="sm" onClick={() => window.print()} className="w-full">
-                                        <Printer className="w-4 h-4 mr-2" /> Print Report
+                                    <Button variant="outline" size="sm" onClick={handleExportPdf} className="w-full">
+                                    <Printer className="w-4 h-4 mr-2" /> Export PDF
                                     </Button>
 
                                     <Button variant="outline" size="sm" onClick={resetFilters} className="w-full">
@@ -542,9 +618,9 @@ const handlePrint = (request: MaintenanceRequest) => {
                                 
 
                                 {/* Request List */}
-                                <div className="space-y-3 mt-4 max-h-[calc(100vh-400px)] overflow-y-auto pr-1">
+                                <div className="space-y-3 mt-4 max-h-[calc(100vh-420px)] overflow-y-auto pr-1">
                                     {filteredRequests.length > 0 ? (
-                                        filteredRequests.map((request) => (
+                                        filteredRequests.map((request: MaintenanceRequest) => (
                                             <div
                                                 key={request.id}
                                                 className={`p-4 rounded-lg border cursor-pointer transition-all hover:shadow-md ${selectedRequest?.id === request.id ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white"
@@ -561,7 +637,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                         <span className="ml-2 capitalize">{request.category}</span>
                                                         </div>
                                                     </div>
-                                                    <div>{getStatusBadge(request.status)}</div>
+                                                    <div>{getStatusBadge(request)}</div>
                                                     </div>
 
                                                     <div className="mb-2">
@@ -598,7 +674,7 @@ const handlePrint = (request: MaintenanceRequest) => {
                                         <div className="flex justify-between items-center">
                                             <CardTitle className="text-xl flex items-center">
                                                 <span>Request {selectedRequest.id}</span>
-                                                <span className="ml-3">{getStatusBadge(selectedRequest.status)}</span>
+                                                <span className="ml-3">{getStatusBadge(selectedRequest)}</span>
                                             </CardTitle>
                                             
                                         </div>
@@ -709,30 +785,62 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                     <h3 className="text-lg font-medium mb-3">Update Status</h3>
                                                     <div className="flex flex-wrap gap-3">
                                                         <Button
-                                                            variant={selectedRequest.status === "pending" ? "default" : "outline"}
+                                                            variant={selectedRequest.status === "pending" && !selectedRequest.isDeleted ? "default" : "outline"}
                                                             onClick={() => updateStatus(selectedRequest.id, "pending")}
-                                                            disabled={isLoading}
+                                                            disabled={isLoading || selectedRequest.isDeleted}
+                                                            title={selectedRequest.isDeleted ? "Restore before updating status" : undefined}
                                                         >
                                                             <Clock className="w-4 h-4 mr-2" />
                                                             Mark as Pending
                                                         </Button>
                                                         <Button
-                                                            variant={selectedRequest.status === "in-progress" ? "default" : "outline"}
+                                                            variant={selectedRequest.status === "in-progress" && !selectedRequest.isDeleted ? "default" : "outline"}
                                                             onClick={() => updateStatus(selectedRequest.id, "in-progress")}
-                                                            disabled={isLoading}
+                                                            disabled={isLoading || selectedRequest.isDeleted}
+                                                            title={selectedRequest.isDeleted ? "Restore before updating status" : undefined}
                                                         >
                                                             <RefreshCw className="w-4 h-4 mr-2" />
                                                             Mark as In Progress
                                                         </Button>
                                                         <Button
-                                                            variant={selectedRequest.status === "completed" ? "default" : "outline"}
+                                                             variant={selectedRequest.status === "completed" && !selectedRequest.isDeleted ? "default" : "outline"}
                                                             onClick={() => updateStatus(selectedRequest.id, "completed")}
-                                                            disabled={isLoading}
+                                                            disabled={isLoading || selectedRequest.isDeleted}
+                                                            title={selectedRequest.isDeleted ? "Restore before updating status" : undefined}
                                                         >
                                                             <CheckCheck className="w-4 h-4 mr-2" />
                                                             Mark as Completed
                                                         </Button>
                                                     </div>
+                                                </div>
+
+                                                 {/* Soft Delete / Reopen */}
+                                                <div className="space-y-3">
+                                                <h3 className="text-lg font-medium">Archive Controls</h3>
+                                                <div className="flex flex-wrap gap-3">
+                                                    {!isPast(selectedRequest) ? (
+                                                    <Button
+                                                        variant="destructive"
+                                                        onClick={() => softDelete(selectedRequest.id)}
+                                                        disabled={isLoading}
+                                                    >
+                                                        <Trash2 className="w-4 h-4 mr-2" />
+                                                        Soft Delete
+                                                    </Button>
+                                                    ) : (
+                                                    <Button
+                                                        variant="secondary"
+                                                        onClick={() => reopenRequest(selectedRequest.id)}
+                                                        disabled={isLoading}
+                                                    >
+                                                        <RotateCcw className="w-4 h-4 mr-2" />
+                                                        Reopen Request
+                                                    </Button>
+                                                    )}
+                                                </div>
+                                                <p className="text-sm text-gray-500">
+                                                    Soft delete moves the request to Past. Reopen brings it back as Pending.
+                                                </p>
                                                 </div>
 
                                                 {/* Assign Staff */}
@@ -745,8 +853,8 @@ const handlePrint = (request: MaintenanceRequest) => {
                                                                 className={`p-3 rounded-lg border cursor-pointer transition-all ${selectedRequest.assignedTo === staff.name
                                                                         ? "border-blue-500 bg-blue-50"
                                                                         : "border-gray-200 hover:border-blue-300"
-                                                                    }`}
-                                                                onClick={() => assignStaff(selectedRequest.id, staff.id)}
+                                                                    } ${selectedRequest.isDeleted ? "opacity-60 cursor-not-allowed" : ""}`}
+                                                                    onClick={() => !selectedRequest.isDeleted && assignStaff(selectedRequest.id, staff.id)}
                                                             >
                                                                 <div className="flex items-center">
                                                                     <Avatar className="h-8 w-8 mr-3">
