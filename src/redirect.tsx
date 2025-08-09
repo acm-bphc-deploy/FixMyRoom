@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from './supabaseClient';
+import adminEmails from './config/adminEmails';
 
 export default function RedirectPage() {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
-    const adminEmails = [
-      'f20231187@hyderabad.bits-pilani.ac.in',
-      'f20231291@hyderabad.bits-pilani.ac.in',
-    ];
+    
     const allowedDomain = 'hyderabad.bits-pilani.ac.in';
 
     const handleUserRedirect = async (user: any) => {
