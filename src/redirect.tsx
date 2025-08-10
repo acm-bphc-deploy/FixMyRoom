@@ -17,8 +17,7 @@ export default function RedirectPage() {
         navigate('/');
         return;
       }
-      const emails = await adminEmails();
-      if (emails.includes(user.email)) {
+      if (adminEmails.includes(user.email)) {
         navigate('/AdminDashboard');
       } else {
         navigate('/MaintenancePortal');
