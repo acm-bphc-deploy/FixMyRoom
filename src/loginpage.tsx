@@ -154,7 +154,7 @@ export default function LoginPage() {
             © {new Date().getFullYear()} ACM BITS Hyderabad
           </p>
           <p className='mb-0 text-xs text-gray-500'>
-            Sudheendra Rao | K Vikashh Adaikalavan
+            Sudheendra Rao A | K Vikashh Adaikalavan
           </p>
         </div>
       </footer>
