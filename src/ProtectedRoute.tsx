@@ -35,13 +35,10 @@ export default function ProtectedRoute({
         return;
       }
 
-      if (adminOnly) {
-  const emails = await adminEmails();
-  if (!emails.includes(user.email)) {
-    navigate('/MaintenancePortal'); // not admin
-    return;
-  }
-}
+      if (adminOnly && !adminEmails.includes(user.email)) {
+        navigate('/MaintenancePortal'); // not admin
+        return;
+      }
 
       setIsChecking(false); // user passed all checks
     })();
