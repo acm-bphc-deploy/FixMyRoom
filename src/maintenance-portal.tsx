@@ -283,8 +283,8 @@ export default function MaintenancePortal() {
                     <Card className="w-full max-w-3xl shadow-2xl animate-fade-in bg-white/95 rounded-2xl border border-gray-200/50">
                 <div className="relative bg-gradient-to-r from-blue-500 to-blue-700 p-8 text-white rounded-t-2xl overflow-hidden">
                     <div className="flex items-center justify-center mb-3">
-                        <Tool className="w-8 h-8 mr-3" />
-                        <h1 className="text-3xl font-bold">Campus Maintenance Portal</h1>
+                        <Building className="w-8 h-8 mr-3" />
+                        <h1 className="text-3xl font-bold">FixMyRoom | Hostel Helpline</h1>
                         
                     </div>
                     
