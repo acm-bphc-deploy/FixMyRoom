@@ -212,16 +212,24 @@ const handlePrint = (request: MaintenanceRequest) => {
     }
 
 
-        // Soft delete
-    const softDelete = (id: string) => {
-        if (!confirm("Soft delete this request? You can restore it from Past requests.")) return
-        setIsLoading(true)
-        setTimeout(() => {
-        setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, isDeleted: true } : r)))
-        setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, isDeleted: true } : prev))
-        setIsLoading(false)
-        }, 300)
-    }
+        // Soft delete (persist to Supabase)
+        const softDelete = async (id: string) => {
+            if (!confirm("Soft delete this request? You can restore it from Past requests.")) return;
+            setIsLoading(true);
+            // Update isDeleted in Supabase
+            const { error } = await supabase
+                .from("maintenance_requests")
+                .update({ isDeleted: true })
+                .eq("id", id);
+
+            if (error) {
+                console.error("Soft delete failed:", error);
+            } else {
+                setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, isDeleted: true } : r)));
+                setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, isDeleted: true } : prev));
+            }
+            setIsLoading(false);
+        }
 
     // Reopen request (from completed or deleted -> pending and active)
     const reopenRequest = async (id: string) => {
