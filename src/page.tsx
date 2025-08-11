@@ -398,7 +398,9 @@ const handlePrint = (request: MaintenanceRequest) => {
             "Meera Bhavan": "Meera Bhavan",
             "Shankar Bhavan": "Shankar Bhavan",
             "Ram Bhavan": "Ram Bhavan",
-            "Krishna Bhavan": "Krishna Bhavan"
+            "Krishna Bhavan": "Krishna Bhavan",
+            "Vyas Bhavan": "Vyas Bhavan",
+            "Ganga Bhavan": "Ganga Bhavan"
         }
         return hostels[buildingCode] || buildingCode
     }
@@ -593,6 +595,8 @@ const handlePrint = (request: MaintenanceRequest) => {
                                         <SelectItem className="hover:bg-blue-200/50" value="Shankar Bhavan">Shankar Bhavan</SelectItem>
                                         <SelectItem className="hover:bg-blue-200/50" value="Ram Bhavan">Ram Bhavan</SelectItem>
                                         <SelectItem className="hover:bg-blue-200/50" value="Krishna Bhavan">Krishna Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Vyas Bhavan">Vyas Bhavan</SelectItem>
+                                        <SelectItem className="hover:bg-blue-200/50" value="Ganga Bhavan">Ganga Bhavan</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     </div>

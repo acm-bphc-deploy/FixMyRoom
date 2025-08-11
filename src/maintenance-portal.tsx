@@ -236,7 +236,9 @@ export default function MaintenancePortal() {
             "Meera Bhavan": "Meera Bhavan",
             "Shankar Bhavan": "Shankar Bhavan",
             "Ram Bhavan": "Ram Bhavan",
-            "Krishna Bhavan": "Krishna Bhavan"
+            "Krishna Bhavan": "Krishna Bhavan",
+            "Vyas Bhavan": "Vyas Bhavan",
+            "Ganga Bhavan": "Ganga Bhavan"
         }
         return buildings[formData.building] || "-"
     }
