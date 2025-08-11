@@ -432,7 +432,6 @@ export default function MaintenancePortal() {
                                                 onChange={handleInputChange}
                                                 className="w-full pl-10 pr-10 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none appearance-none bg-white"
                                             >
-                                                
                                                 <option value="" disabled>Select your Hostel </option>
                                                 <option value="Viswakarma Bhavan">Viswakarma Bhavan</option>
                                                 <option value="Valmiki Bhavan">Valmiki Bhavan</option>
@@ -444,7 +443,8 @@ export default function MaintenancePortal() {
                                                 <option value="Shankar Bhavan">Shankar Bhavan</option>
                                                 <option value="Ram Bhavan">Ram Bhavan</option>
                                                 <option value="Krishna Bhavan">Krishna Bhavan</option>
-
+                                                <option value="Vyas Bhavan">Vyas Bhavan</option>
+                                                <option value="Ganga Bhavan">Ganga Bhavan</option>
 
                                             </select>
                                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
