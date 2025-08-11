@@ -224,16 +224,24 @@ const handlePrint = (request: MaintenanceRequest) => {
     }
 
     // Reopen request (from completed or deleted -> pending and active)
-    const reopenRequest = (id: string) => {
-        setIsLoading(true)
-        setTimeout(() => {
-        setRequests((prev) =>
-            prev.map((r) => (r.id === id ? { ...r, status: "pending", isDeleted: false } : r)),
-        )
-        setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, status: "pending", isDeleted: false } : prev))
-        setViewMode("active")
-        setIsLoading(false)
-        }, 300)
+    const reopenRequest = async (id: string) => {
+        setIsLoading(true);
+        // Update in Supabase
+        const { error } = await supabase
+            .from("maintenance_requests")
+            .update({ status: "pending", isDeleted: false })
+            .eq("id", id);
+
+        if (error) {
+            console.error("Reopen request failed:", error);
+        } else {
+            setRequests((prev) =>
+                prev.map((r) => (r.id === id ? { ...r, status: "pending", isDeleted: false } : r)),
+            );
+            setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, status: "pending", isDeleted: false } : prev));
+            setViewMode("active");
+        }
+        setIsLoading(false);
     }
    
 
