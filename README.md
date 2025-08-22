@@ -79,4 +79,4 @@ Pull requests are welcome! For major changes, please open an issue first.
 
 ## License
 
-[MIT](LICENSE)
+[Creative Commons Attribution-NonCommercial-NoDerivatives (CC BY-NC-ND 4.0)](LICENSE)
