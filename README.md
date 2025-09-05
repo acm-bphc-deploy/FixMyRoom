@@ -1,82 +1,83 @@
-Welcome to the hostel helpline website for bphc.
+# BPHC Hostel Helpline 🏫
+A web portal for **BPHC Hostel Maintenance**, allowing students to report and track maintenance issues in their hostel rooms.
 
+<div align="center">
 
-A web portal for BPHC Hostel Maintenance, allowing students to report and track maintenance issues in their hostel rooms.
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+
+<!-- Un-comment this section once repo is made public 
+[![Contributors](https://img.shields.io/github/contributors/BPHC-ACM/FixMyRoom?style=for-the-badge)](https://github.com/BPHC-ACM/FixMyRoom/graphs/contributors)
+[![Forks](https://img.shields.io/github/forks/BPHC-ACM/FixMyRoom?style=for-the-badge)](https://github.com/BPHC-ACM/FixMyRoom/network/members)
+[![Commits](https://img.shields.io/github/commit-activity/m/BPHC-ACM/FixMyRoom?style=for-the-badge)](https://github.com/BPHC-ACM/FixMyRoom/commits)
+[![Last Commit](https://img.shields.io/github/last-commit/BPHC-ACM/FixMyRoom?style=for-the-badge)](https://github.com/BPHC-ACM/FixMyRoom/commits)
+-->
+
+</div>
+
+---
 
 ## Features
 
-- Google OAuth login (BITS email required)
-- Report maintenance issues
-- Track resolution status
-- Admin/hostel office contact info
+### **Secure Access**
+- **Google OAuth Authentication**: BITS email required
+- **Privacy Controls**: Manage your personal info and room data
+
+### **Maintenance Management**
+- **Report Issues**: Submit hostel room maintenance requests
+- **Track Resolution**: Monitor status in real time
+- **Hostel Contact Info**: Quick access to admin/officer contact
+
+---
 
 ## Tech Stack
 
-- React (with TypeScript)
-- Supabase (for authentication and backend)
-- Tailwind CSS (for styling)
-- Vite (for development/build)
+<div align="center">
 
-## Getting Started
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend** | React + TypeScript + TailwindCSS | Responsive, modern UI |
+| **Backend** | Supabase | Authentication, database, and real-time updates |
+| **Development** | Vite | Fast development and build process |
+| **Authentication** | Google OAuth | Secure login with BITS email verification |
+| **Deployment** | Netlify / Your choice | Fast and reliable hosting |
 
-### 1. Clone the repository
+</div>
 
-```bash
-git clone https://github.com/yourusername/hostel-helpline.git
-cd hostel-helpline
-```
-
-### 2. Install dependencies
-
-```bash
-npm install
-```
-
-### 3. Configure Environment
-
-- Create a `.env` file with your Supabase credentials and any other required environment variables.
-
-### 4. Tailwind CSS Setup
-
-Make sure you have the following in your `tailwind.config.js`:
-
-```js
-module.exports = {
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
-  theme: { extend: {} },
-  plugins: [],
-}
-```
-
-And in your main CSS file (e.g., `src/index.css`):
-
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-### 5. Run the development server
-
-```bash
-npm run dev
-```
+---
 
 ## Project Structure
-
 ```
 src/
-  components/      # Reusable UI components (Card, Button, etc.)
-  lib/             # Utility functions
-  loginpage.tsx    # Login page with Google OAuth
-  supabaseClient.ts# Supabase client setup
+  components/         # Reusable UI components (Card, Button, etc.)
+  lib/                # Utility functions
+  loginpage.tsx       # Login page with Google OAuth
+  supabaseClient.ts   # Supabase client setup
   ...
 ```
 
+---
+
+<!-- Un-comment this section once repo is made public 
 ## Contributing
 
-Pull requests are welcome! For major changes, please open an issue first.
+Pull requests are welcome! For major changes, please open an issue first to discuss.
+
+---
+-->
 
 ## License
 
-[Creative Commons Attribution-NonCommercial-NoDerivatives (CC BY-NC-ND 4.0)](LICENSE)
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
+
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
+
+---
+<div align="center">
+
+<code>Made with ❤️ by ACM BPHC</code>
+
+</div>
