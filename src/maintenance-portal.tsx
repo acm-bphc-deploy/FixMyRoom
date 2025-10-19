@@ -23,6 +23,7 @@ import {
     Camera,
     X,
     PenToolIcon as Tool,
+    Tag, // <-- added Tag icon
 } from "lucide-react"
 import { Card, CardContent } from "./components/card"
 import { supabase } from "./supabaseClient"
@@ -34,7 +35,6 @@ export default function MaintenancePortal() {
     const [currentStep, setCurrentStep] = useState(1)
     const [formData, setFormData] = useState({
         name: "",
-
         email: "",
         phone: "",
         building: "",
@@ -44,6 +44,9 @@ export default function MaintenancePortal() {
         priority: "low",
         visitTime: "",
         termsCheck: false,
+        // Added fields for tags and washroom location
+        tags: [] as string[],
+        washroom: "",
     })
 
     const [userDetails, setUserDetails] = useState({
@@ -82,6 +85,35 @@ export default function MaintenancePortal() {
     // Refs
     const fileInputRef = useRef<HTMLInputElement>(null)
 
+    // --- New: common tags for categories ---
+    const availableTags: Record<string, string[]> = {
+        electricity: [
+            "No power",
+            "Light flicker",
+            "Socket issue",
+            "Fan not working",
+            "Tripped breaker",
+            "Other"
+        ],
+        plumbing: [
+            "Leaking tap",
+            "Clogged drain",
+            "Toilet clog",
+            "No hot water",
+            "Low pressure",
+            "Washroom issue",
+            "Other"
+        ],
+        carpentry: [
+            "Broken door",
+            "Loose hinge",
+            "Furniture damage",
+            "Window latch",
+            "Drawer issue",
+            "Other"
+        ]
+    }
+
     // Handle input changes
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target
@@ -105,7 +137,20 @@ export default function MaintenancePortal() {
         setFormData({
             ...formData,
             category,
+            // reset tags and washroom when switching category
+            tags: [],
+            washroom: "",
         })
+    }
+
+    // --- New: toggle tags ---
+    const toggleTag = (tag: string) => {
+        const tags = formData.tags || []
+        if (tags.includes(tag)) {
+            setFormData({ ...formData, tags: tags.filter(t => t !== tag) })
+        } else {
+            setFormData({ ...formData, tags: [...tags, tag] })
+        }
     }
 
     // Handle priority selection
@@ -201,7 +246,10 @@ export default function MaintenancePortal() {
                         status: 'pending',
                         createdAt: new Date().toISOString(),
                         isDeleted: false,
-                        hasImage: hasImage
+                        hasImage: hasImage,
+                        // include tags and washroom for analytics
+                        tags: formData.tags,
+                        washroom: formData.washroom || null,
                     }
                 ])
                 .select(); // Add select() to get the inserted record back
@@ -274,6 +322,8 @@ export default function MaintenancePortal() {
             priority: "low",
             visitTime: "",
             termsCheck: false,
+            tags: [],
+            washroom: "",
         })
         setImagePreview(null)
         setHasImage(false)
@@ -342,7 +392,7 @@ export default function MaintenancePortal() {
 
     return (
 
-        <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100 bg-[url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27%3E%3Cg fillRule=%27evenodd%27%3E%3Cg fill=%27%233b82f6%27 fillOpacity=%270.05%27%3E%3Cpath opacity=%27.5%27 d=%27M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]">
+        <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100 bg-[url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27%3E%3Cg fillRule=%27evenodd%27%3E%3Cg fill=%27%233b82f6%27 fillOpacity=%270.05%27%3E%3Cpath opacity=%27.5%27 d=%27M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]">
             <Card className="w-full max-w-3xl shadow-2xl animate-fade-in bg-white/95 rounded-2xl border border-gray-200/50">
                 <div className="relative bg-gradient-to-r from-blue-500 to-blue-700 p-8 text-white rounded-t-2xl overflow-hidden">
                     <div className="flex items-center justify-center mb-3">
@@ -605,6 +655,91 @@ export default function MaintenancePortal() {
                                     </div>
                                 </div>
 
+                                {/* New: Tag suggestions based on selected category */}
+                                <div className="mb-5">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Common Issues / Tags</label>
+                                    <div className="text-xs text-gray-500 mb-2">Choose tags to help analytics and faster triage. You can select multiple.</div>
+
+                                    <div className="flex flex-wrap gap-2">
+                                        {(availableTags[formData.category] || []).map((tag) => {
+                                            const selected = formData.tags?.includes(tag)
+                                            return (
+                                                <button
+                                                    key={tag}
+                                                    type="button"
+                                                    onClick={() => toggleTag(tag)}
+                                                    className={`inline-flex items-center px-3 py-1.5 rounded-full border cursor-pointer transition-all duration-200 ${selected ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                                                        }`}
+                                                >
+                                                    <Tag className="w-4 h-4 mr-2" />
+                                                    <span className="text-sm">{tag}</span>
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+
+                                    {/* If 'Other' selected show input for custom tag */}
+                                    {formData.tags?.includes("Other") && (
+                                        <div className="mt-3">
+                                            <input
+                                                type="text"
+                                                name="otherTag"
+                                                placeholder="Describe the issue (this will be added as a tag)"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault()
+                                                        const input = e.currentTarget as HTMLInputElement
+                                                        const value = input.value.trim()
+                                                        if (value) {
+                                                            // replace 'Other' with custom tag
+                                                            setFormData({
+                                                                ...formData,
+                                                                tags: formData.tags.filter(t => t !== "Other").concat(value)
+                                                            })
+                                                            input.value = ""
+                                                        }
+                                                    }
+                                                }}
+                                                className="w-full pl-3 pr-3 py-2 rounded-lg border-2 border-gray-200 focus:border-blue-500"
+                                            />
+                                            <div className="text-xs text-gray-500 mt-1">Press Enter to add the custom tag</div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* New: Washroom selector for plumbing (bathroom-1 .. bathroom-16) */}
+                                {formData.category === "plumbing" && (
+                                    <div className="mb-5">
+                                        <label htmlFor="washroom" className="block text-sm font-medium text-gray-700 mb-1">
+                                            Specific Washroom (if applicable)
+                                        </label>
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <Droplet className="w-5 h-5 text-gray-400" />
+                                            </div>
+                                            <select
+                                                id="washroom"
+                                                name="washroom"
+                                                value={formData.washroom}
+                                                onChange={handleInputChange}
+                                                className="w-full pl-10 pr-10 py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300 focus:outline-none appearance-none bg-white"
+                                            >
+                                                <option value="">Select washroom (optional)</option>
+                                                {Array.from({ length: 16 }).map((_, i) => {
+                                                    const val = `bathroom-${i + 1}`
+                                                    return <option key={val} value={val}>{`Bathroom ${i + 1}`}</option>
+                                                })}
+                                            </select>
+                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <ChevronDown className="w-5 h-5 text-gray-400" />
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-1">
+                                            Use standard nomenclature (bathroom-1 … bathroom-16) to help operations locate the issue quickly.
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Problem Description */}
                                 <div className="mb-5">
                                     <label htmlFor="problem" className="block text-sm font-medium text-gray-700 mb-1">
@@ -812,6 +947,30 @@ export default function MaintenancePortal() {
                                         <p className="text-sm text-gray-500">Description</p>
                                         <p className="font-medium text-gray-800 whitespace-pre-line">{formData.problem || "-"}</p>
                                     </div>
+
+                                    {/* Show tags and washroom in review */}
+                                    <div className="mt-4">
+                                        <p className="text-sm text-gray-500">Selected Tags</p>
+                                        <div className="mt-2 flex flex-wrap gap-2">
+                                            {(formData.tags || []).length === 0 ? (
+                                                <span className="text-sm text-gray-600">No tags selected</span>
+                                            ) : (
+                                                (formData.tags || []).map(tag => (
+                                                    <span key={tag} className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-sm text-gray-700 border">
+                                                        <Tag className="w-3 h-3 mr-2" />{tag}
+                                                    </span>
+                                                ))
+                                            )}
+                                        </div>
+
+                                        {formData.washroom && (
+                                            <div className="mt-3">
+                                                <p className="text-sm text-gray-500">Washroom</p>
+                                                <p className="font-medium text-gray-800">{formData.washroom}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
                                 </div>
 
                                 <div className="flex items-center mb-5">

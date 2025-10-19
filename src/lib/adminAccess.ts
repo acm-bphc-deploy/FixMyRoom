@@ -198,3 +198,19 @@ export async function getAdminHostelAccess(
         accessibleHostels
     }
 }
+
+export type CategoryCounts = {
+    category: string;
+    count: number; // TypeScript's 'number' corresponds to SQL's 'bigint'
+};
+
+export async function getCategoryCounts(supabaseClient: SupabaseClient){
+    const {data,error} = await supabaseClient.rpc('category_counts',{});
+    console.log(data);
+    if (error) {
+        console.error('Error fetching category counts:', error.message);
+        return null;
+    }
+
+    return data as CategoryCounts[];
+}
