@@ -19,10 +19,18 @@ export default function LoginPage() {
       // Clear any existing auth state to prevent conflicts
       await supabase.auth.signOut();
 
+<<<<<<< HEAD
       // Use configured redirect URL or fallback to current origin
       const redirectTo =
         import.meta.env.VITE_REDIRECT_URL ||
         `${window.location.origin}/redirect`;
+=======
+      // Prefer a local redirect URL during development so OAuth returns to the running dev server.
+      // In production we'll use the configured VITE_REDIRECT_URL.
+      const redirectTo = import.meta.env.DEV
+        ? `${window.location.origin}/redirect`
+        : import.meta.env.VITE_REDIRECT_URL || `${window.location.origin}/redirect`;
+>>>>>>> 1fc6e67 (added maint req feature)
       console.log('Redirect URL:', redirectTo);
 
       const { data, error } = await supabase.auth.signInWithOAuth({

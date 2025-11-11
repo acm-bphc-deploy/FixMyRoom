@@ -24,7 +24,30 @@ export default function RedirectPage() {
       }
     };
 
+<<<<<<< HEAD
     const tryGetSession = async () => {
+=======
+    const tryExchangeAndGetSession = async () => {
+      // Try to exchange OAuth code from the URL into a session first. This
+      // helps ensure the session is available on the redirect page.
+      try {
+        const { data: urlData, error: urlError } = await supabase.auth.getSessionFromUrl();
+        if (urlError) {
+          // Not necessarily fatal; continue to try getting session below.
+          console.debug('getSessionFromUrl error (ignored):', urlError.message || urlError);
+        } else {
+          // If a session was returned directly, handle it.
+          if (urlData?.session?.user) {
+            await handleUserRedirect(urlData.session.user);
+            return;
+          }
+        }
+      } catch (err) {
+        console.debug('getSessionFromUrl threw:', err);
+      }
+
+      // Fallback: try to read an existing session (after exchange might have completed)
+>>>>>>> 1fc6e67 (added maint req feature)
       const { data, error } = await supabase.auth.getSession();
       const session = data.session;
       if (error) {
@@ -36,7 +59,11 @@ export default function RedirectPage() {
       }
     };
 
+<<<<<<< HEAD
     tryGetSession();
+=======
+    tryExchangeAndGetSession();
+>>>>>>> 1fc6e67 (added maint req feature)
 
     const {
       data: { subscription },
