@@ -8,7 +8,6 @@ export default function RedirectPage() {
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
-    
     const allowedDomain = 'hyderabad.bits-pilani.ac.in';
 
     const handleUserRedirect = async (user: any) => {
@@ -17,6 +16,9 @@ export default function RedirectPage() {
         navigate('/');
         return;
       }
+      
+      setIsProcessing(false);
+      
       if (adminEmails.includes(user.email)) {
         navigate('/AdminDashboard');
       } else {
@@ -24,20 +26,34 @@ export default function RedirectPage() {
       }
     };
 
-    const tryGetSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      const session = data.session;
-      if (error) {
+    // Single async function to handle the entire authentication flow
+    const handleAuthRedirect = async () => {
+      try {
+        // First, try to get the current session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          navigate('/');
+          return;
+        }
+
+        if (session?.user) {
+          await handleUserRedirect(session.user);
+        } else {
+          // If no session exists, redirect to login
+          navigate('/');
+        }
+      } catch (err) {
+        console.error('Auth redirect error:', err);
         navigate('/');
-        return;
-      }
-      if (session?.user) {
-        await handleUserRedirect(session.user);
       }
     };
 
-    tryGetSession();
+    // Execute the auth handling
+    handleAuthRedirect();
 
+    // Set up auth state change listener for real-time updates
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -48,7 +64,9 @@ export default function RedirectPage() {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   return (
