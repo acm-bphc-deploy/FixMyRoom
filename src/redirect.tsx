@@ -8,7 +8,6 @@ export default function RedirectPage() {
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
-    
     const allowedDomain = 'hyderabad.bits-pilani.ac.in';
 
     const handleUserRedirect = async (user: any) => {
@@ -17,6 +16,9 @@ export default function RedirectPage() {
         navigate('/');
         return;
       }
+      
+      setIsProcessing(false);
+      
       if (adminEmails.includes(user.email)) {
         navigate('/AdminDashboard');
       } else {
@@ -24,47 +26,34 @@ export default function RedirectPage() {
       }
     };
 
-<<<<<<< HEAD
-    const tryGetSession = async () => {
-=======
-    const tryExchangeAndGetSession = async () => {
-      // Try to exchange OAuth code from the URL into a session first. This
-      // helps ensure the session is available on the redirect page.
+    // Single async function to handle the entire authentication flow
+    const handleAuthRedirect = async () => {
       try {
-        const { data: urlData, error: urlError } = await supabase.auth.getSessionFromUrl();
-        if (urlError) {
-          // Not necessarily fatal; continue to try getting session below.
-          console.debug('getSessionFromUrl error (ignored):', urlError.message || urlError);
+        // First, try to get the current session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          navigate('/');
+          return;
+        }
+
+        if (session?.user) {
+          await handleUserRedirect(session.user);
         } else {
-          // If a session was returned directly, handle it.
-          if (urlData?.session?.user) {
-            await handleUserRedirect(urlData.session.user);
-            return;
-          }
+          // If no session exists, redirect to login
+          navigate('/');
         }
       } catch (err) {
-        console.debug('getSessionFromUrl threw:', err);
-      }
-
-      // Fallback: try to read an existing session (after exchange might have completed)
->>>>>>> 1fc6e67 (added maint req feature)
-      const { data, error } = await supabase.auth.getSession();
-      const session = data.session;
-      if (error) {
+        console.error('Auth redirect error:', err);
         navigate('/');
-        return;
-      }
-      if (session?.user) {
-        await handleUserRedirect(session.user);
       }
     };
 
-<<<<<<< HEAD
-    tryGetSession();
-=======
-    tryExchangeAndGetSession();
->>>>>>> 1fc6e67 (added maint req feature)
+    // Execute the auth handling
+    handleAuthRedirect();
 
+    // Set up auth state change listener for real-time updates
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -75,7 +64,9 @@ export default function RedirectPage() {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   return (
