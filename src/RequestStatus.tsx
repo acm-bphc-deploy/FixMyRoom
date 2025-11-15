@@ -1,16 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import adminEmails from "./config/adminEmails";
 
 export default function RequestStatus() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [request, setRequest] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [showReopenConfirm, setShowReopenConfirm] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -177,13 +179,22 @@ export default function RequestStatus() {
               </div>
               <p className="text-sm text-slate-500 ml-15">Submitted on {new Date(request.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getPriorityColor(request.priority)}`}>
                 {request.priority?.toUpperCase() || "NORMAL"} PRIORITY
               </span>
               <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(request.status)}`}>
                 {request.status?.toUpperCase()}
               </span>
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="ml-3 px-4 py-2 rounded-2xl font-semibold text-sm bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Dashboard
+              </button>
             </div>
           </div>
         </div>
@@ -344,6 +355,99 @@ export default function RequestStatus() {
               <div>
                 <h3 className="text-xl font-bold text-green-700">✓ You've confirmed completion!</h3>
                 <p className="text-sm text-green-600">Waiting for worker confirmation to finalize</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* REOPEN BUTTON */}
+        {isRequester && request.status === "completed" && (
+          <div className="glass-card rounded-3xl p-6 mb-6 bg-gradient-to-r from-red-50 to-rose-50 border-2 border-rose-300 hover-lift">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v6h6M20 20v-6h-6M5 19l14-14" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-rose-700">Need to reopen this request?</h3>
+                  <p className="text-sm text-rose-600">If the issue still persists, reopen the request.</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowReopenConfirm(true)}
+                disabled={saving}
+                className="px-8 py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-red-500 to-rose-600 text-white hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 shadow-xl flex items-center gap-2 whitespace-nowrap"
+              >
+                {saving ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Reopening...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v6h6M20 20v-6h-6M5 19l14-14" />
+                    </svg>
+                    Reopen Request
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Reopen Confirmation Modal */}
+        {showReopenConfirm && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 animate-fade-in">
+            <div
+              className="absolute inset-0 bg-black bg-opacity-50"
+              onClick={() => setShowReopenConfirm(false)}
+            ></div>
+            <div className="bg-white rounded-lg p-6 max-w-lg w-full relative z-10 shadow-2xl">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-slate-800">Reopen request?</h3>
+                  <p className="text-sm text-slate-600 mt-1">This will set the request back to pending and clear confirmations. Are you sure you want to continue?</p>
+                </div>
+              </div>
+              <div className="mt-6 flex gap-3 justify-end">
+                <button
+                  className="px-4 py-2 rounded-lg bg-gray-100 text-slate-700 hover:bg-gray-200 transition-all"
+                  onClick={() => setShowReopenConfirm(false)}
+                  disabled={saving}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold hover:opacity-95 transition-all"
+                  onClick={async () => {
+                    await updateFlags({
+                      status: "pending",
+                      requester_confirmed: false,
+                      worker_confirmed: false,
+                      progress: 0,
+                    });
+                    setShowReopenConfirm(false);
+                  }}
+                  disabled={saving}
+                >
+                  {saving ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Reopening...
+                    </span>
+                  ) : (
+                    "Yes, Reopen"
+                  )}
+                </button>
               </div>
             </div>
           </div>

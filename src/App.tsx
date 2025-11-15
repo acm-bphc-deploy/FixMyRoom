@@ -1,28 +1,41 @@
-
-
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import MaintenancePortal from "./maintenance-portal";
-import AdminDashboard from "./page.tsx";
+
 import LoginPage from "./loginpage.tsx";
 import RedirectPage from "./redirect";
 import ProtectedRoute from "./ProtectedRoute";
+import Dashboard from "./Dashboard";
+import MaintenancePortal from "./maintenance-portal";
+import SeeAllRequests from "./SeeAllRequests";
 import RequestStatus from "./RequestStatus";
-import SeeAllRequests from "./SeeAllRequests.tsx";
-
+import AdminDashboard from "./page.tsx";
 
 export default function App() {
   return (
     <Router>
       <Routes>
+        {/* Login */}
         <Route path="/" element={<LoginPage />} />
+
+        {/* Redirect from magic link */}
         <Route path="/redirect" element={<RedirectPage />} />
+
+        {/* STUDENT ROUTES */}
         <Route
-          path="/MaintenancePortal"
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/new-request"
           element={
             <ProtectedRoute>
               <MaintenancePortal />
@@ -31,9 +44,7 @@ export default function App() {
         />
 
         <Route
-
-
-          path="/seeAllRequests/:email"
+          path="/requests"
           element={
             <ProtectedRoute>
               <SeeAllRequests />
@@ -42,7 +53,16 @@ export default function App() {
         />
 
         <Route
+          path="/request/:id"
+          element={
+            <ProtectedRoute>
+              <RequestStatus />
+            </ProtectedRoute>
+          }
+        />
 
+        {/* ADMIN ROUTE */}
+        <Route
           path="/AdminDashboard"
           element={
             <ProtectedRoute adminOnly={true}>
@@ -51,12 +71,8 @@ export default function App() {
           }
         />
 
+        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
-
-
-        <Route path="/request/:id" element={<RequestStatus />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
     </Router>
   );
