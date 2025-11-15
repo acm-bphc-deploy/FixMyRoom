@@ -640,10 +640,10 @@ export default function MaintenancePortal() {
                     onClick={() => {
                       console.log("heleluya");
                       console.log(userDetails)
-                      navigate(`/seeAllRequests/${userDetails.email}`);
+                      navigate('/dashboard');
                     }}
                   >
-                    Show Previous Requests
+                   <ArrowLeft className="ml-2 w-5 h-5" />  Back to Dashboard
                   </button>
 
                   <button
