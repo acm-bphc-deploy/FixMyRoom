@@ -12,16 +12,6 @@ import {
   Loader2,
   FileText,
 } from "lucide-react";
-
-/**
- * Dashboard.tsx
- *
- * Student dashboard (blue premium theme) — glass-morphism layout,
- * shows counts, quick actions and recent requests. Matches RequestStatus style.
- *
- * Drop this file into your project and import `<Dashboard />` at /dashboard route.
- */
-
 type RequestRecord = {
   id: string;
   created_at?: string;
@@ -79,7 +69,7 @@ export default function Dashboard() {
 
       try {
         const { data, error } = await supabase
-          .from<RequestRecord>("maintenance_requests")
+          .from("maintenance_requests")
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })

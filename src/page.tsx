@@ -1,9 +1,8 @@
 "use client"
 
 import React, {use, useMemo} from "react";
-import jsPDF from "jspdf";
 import { useState, useEffect } from "react"
-import autoTable from "jspdf-autotable";
+// Lazy-load heavy PDF libraries when printing/exporting to reduce initial bundle size
 import { supabase } from "./supabaseClient"
 import { exportRequestsPdf } from "./lib/reports"
 import {
@@ -259,20 +258,23 @@ export default function AdminDashboard() {
 
 
   const handlePrint = (request: MaintenanceRequest) => {
-    const doc = new jsPDF();
+    (async () => {
+      const { default: jsPDF } = await import("jspdf");
+      const doc = new jsPDF();
 
-    doc.setFontSize(16);
-    doc.text("Maintenance Request Details", 20, 20);
+      doc.setFontSize(16);
+      doc.text("Maintenance Request Details", 20, 20);
 
-    doc.setFontSize(12);
-    doc.text(`ID: ${request.id}`, 20, 40);
-    doc.text(`Name: ${request.name}`, 20, 50);
-    doc.text(`Phone: ${request.phone}`, 20, 60);
-    doc.text(`Category: ${request.category}`, 20, 70);
-    doc.text("Description:", 20, 80);
-    doc.text(doc.splitTextToSize(request.problem ?? "N/A", 170), 20, 90);
+      doc.setFontSize(12);
+      doc.text(`ID: ${request.id}`, 20, 40);
+      doc.text(`Name: ${request.name}`, 20, 50);
+      doc.text(`Phone: ${request.phone}`, 20, 60);
+      doc.text(`Category: ${request.category}`, 20, 70);
+      doc.text("Description:", 20, 80);
+      doc.text(doc.splitTextToSize(request.problem ?? "N/A", 170), 20, 90);
 
-    doc.save(`${request.id}.pdf`);
+      doc.save(`${request.id}.pdf`);
+    })().catch((e) => console.error("Print failed:", e));
   };
 
 
@@ -411,31 +413,38 @@ export default function AdminDashboard() {
 
 
   const handlePrintAll = (filteredRequests: MaintenanceRequest[]) => {
-    const doc = new jsPDF();
+    (async () => {
+      try {
+        const { default: jsPDF } = await import("jspdf");
+        const { default: autoTable } = await import("jspdf-autotable");
+        const doc = new jsPDF();
 
-    doc.setFontSize(16);
-    doc.text("Filtered Maintenance Requests", 14, 20);
+        doc.setFontSize(16);
+        doc.text("Filtered Maintenance Requests", 14, 20);
 
-    autoTable(doc, {
-      startY: 30,
-      head: [["Name", "Phone", "Building", "Room", "Category", "Priority", "Description"]],
-      body: filteredRequests.map((req) => [
+        autoTable(doc, {
+          startY: 30,
+          head: [["Name", "Phone", "Building", "Room", "Category", "Priority", "Description"]],
+          body: filteredRequests.map((req) => [
+            req.name,
+            req.phone,
+            req.building,
+            req.roomNo,
+            req.category,
+            req.priority,
+            req.problem,
+          ]),
+          styles: {
+            cellPadding: 2,
+            fontSize: 8,
+          },
+        });
 
-        req.name,
-        req.phone,
-        req.building,
-        req.roomNo,
-        req.category,
-        req.priority,
-        req.problem,
-      ]),
-      styles: {
-        cellPadding: 2,
-        fontSize: 8,
-      },
-    });
-
-    doc.save("filtered_requests.pdf");
+        doc.save("filtered_requests.pdf");
+      } catch (e) {
+        console.error("Export failed:", e);
+      }
+    })();
   };
 
 

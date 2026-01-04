@@ -284,7 +284,7 @@ export default function SeeAllRequests() {
               <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl">
-                    {getCategoryIcon(request.category)}
+                    {getCategoryIcon(request.category ?? undefined)}
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-800 capitalize">
@@ -301,7 +301,7 @@ export default function SeeAllRequests() {
                 <div className="text-right">
                   <div
                     className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(
-                      request.priority
+                      request.priority ?? undefined
                     )}`}
                   >
                     {request.priority || "low"}
