@@ -633,7 +633,7 @@ export default function MaintenancePortal() {
                   </div>
                 </div>
 
-                <div className="mt-8 flex justify-between">
+                <div className="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-4">
                   <button
                     type="button"
                     className="px-8 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 text-white font-medium shadow-lg hover:translate-y-[-2px] transition-all duration-300 flex items-center"
@@ -989,7 +989,7 @@ export default function MaintenancePortal() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex justify-between">
+                <div className="mt-6 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between">
                   <button
                     type="button"
                     className="px-6 py-3 rounded-lg text-gray-600 font-medium border-2 border-gray-300 hover:bg-gray-100 transition-all duration-300 flex items-center"
@@ -1141,7 +1141,7 @@ export default function MaintenancePortal() {
                   </label>
                 </div>
 
-                <div className="mt-6 flex justify-between">
+                <div className="mt-6 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between">
                   <button
                     type="button"
                     className="px-6 py-3 rounded-lg text-gray-600 font-medium border-2 border-gray-300 hover:bg-gray-100 transition-all duration-300 flex items-center"

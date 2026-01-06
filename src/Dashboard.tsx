@@ -130,7 +130,7 @@ export default function Dashboard() {
               </p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <button
                 onClick={openNewRequest}
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-lg hover:scale-105 transition-transform"
@@ -197,7 +197,7 @@ export default function Dashboard() {
         {/* Recent requests */}
         <div className="glass-card rounded-2xl p-6 shadow-2xl border border-white/30 mb-10">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0 sm:shrink">
               <FileText className="w-5 h-5 text-blue-600" />
               <h2 className="text-lg font-bold text-slate-800">Recent Requests</h2>
             </div>
@@ -222,10 +222,10 @@ export default function Dashboard() {
                 <div
                   key={r.id}
                   onClick={() => openRequest(r.id)}
-                  className="cursor-pointer bg-white/80 hover:bg-white/100 transition-all rounded-xl p-4 border border-gray-100 shadow-sm flex items-center justify-between"
+                  className="cursor-pointer bg-white/80 hover:bg-white/100 transition-all rounded-xl p-4 border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
                 >
                   <div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 shrink-0 sm:shrink">
                       <div className="w-3.5 h-3.5 rounded-full"
                         style={{
                           background:
@@ -242,7 +242,7 @@ export default function Dashboard() {
                               : "1px solid #34d399",
                         }}
                       />
-                      <h3 className="font-semibold text-slate-800 text-lg truncate max-w-[48rem]">
+                      <h3 className="font-semibold text-slate-800 text-lg break-words">
                         {r.category ? `${capitalize(r.category)} — ` : ""}
                         {r.problem ? truncateText(r.problem, 70) : "No description"}
                       </h3>
@@ -255,7 +255,7 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 self-start sm:self-auto shrink-0">
                     <span
                       className={`px-3 py-1 text-xs rounded-full font-medium capitalize ${
                         statusClasses(r.status)
