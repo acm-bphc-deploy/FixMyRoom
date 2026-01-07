@@ -3,7 +3,6 @@
 "use client"
 
 import React, { useMemo, useState, useEffect } from "react";
-
 // Lazy-load heavy PDF libraries when printing/exporting to reduce initial bundle size
 import { supabase } from "./supabaseClient"
 import { exportRequestsPdf } from "./lib/reports"
