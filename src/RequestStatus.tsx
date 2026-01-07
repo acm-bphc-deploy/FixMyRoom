@@ -164,7 +164,7 @@ export default function RequestStatus() {
 
       <div className="max-w-5xl mx-auto">
         {/* Header Card */}
-        <div className="glass-card rounded-3xl p-8 mb-6 hover-lift">
+        <div className="glass-card rounded-3xl p-5 sm:p-8 mb-6 hover-lift">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
@@ -179,16 +179,22 @@ export default function RequestStatus() {
               </div>
               <p className="text-sm text-slate-500 ml-15">Submitted on {new Date(request.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
             </div>
-            <div className="flex gap-2 items-center">
-              <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getPriorityColor(request.priority)}`}>
+            <div className="flex flex-col gap-3">
+              <span className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${getPriorityColor(request.priority)}`}>
                 {request.priority?.toUpperCase() || "NORMAL"} PRIORITY
               </span>
-              <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(request.status)}`}>
+              <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getStatusColor(request.status)}`}>
                 {request.status?.toUpperCase()}
               </span>
+              </div>
+              <div className="self-start">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="ml-3 px-4 py-2 rounded-2xl font-semibold text-sm bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2"
+                className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-sm font-medium
+bg-blue-50 text-blue-700
+border border-blue-100
+flex items-center gap-2
+hover:bg-blue-100 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -420,14 +426,14 @@ export default function RequestStatus() {
               </div>
               <div className="mt-6 flex gap-3 justify-end">
                 <button
-                  className="px-4 py-2 rounded-lg bg-gray-100 text-slate-700 hover:bg-gray-200 transition-all"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-gray-100 text-slate-700 hover:bg-gray-200 transition-all"
                   onClick={() => setShowReopenConfirm(false)}
                   disabled={saving}
                 >
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold hover:opacity-95 transition-all"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold hover:opacity-95 transition-all"
                   onClick={async () => {
                     await updateFlags({
                       status: "pending",

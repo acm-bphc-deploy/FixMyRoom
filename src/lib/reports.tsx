@@ -1,5 +1,4 @@
-import jsPDF from "jspdf"
-import autoTable from "jspdf-autotable"
+// Dynamically import heavy pdf libraries when needed to reduce initial bundle size
 
 type RequestForReport = {
   id: string
@@ -22,6 +21,8 @@ export async function exportRequestsPdf(
   options?: { title?: string },
 ) {
   const title = options?.title ?? "Maintenance Report"
+  const { default: jsPDF } = await import("jspdf")
+  const { default: autoTable } = await import("jspdf-autotable")
   const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" })
 
   // Header

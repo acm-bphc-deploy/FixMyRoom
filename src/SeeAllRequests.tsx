@@ -165,7 +165,7 @@ export default function SeeAllRequests() {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
+    <div className="p-6 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen min-w-[220px]">
       <div className="max-w-6xl mx-auto">
         
         {/* ⭐ Minimal Glass Back Button — Option A */}
@@ -195,9 +195,9 @@ export default function SeeAllRequests() {
         </button>
 
         {/* Header + Filters */}
-        <div className="flex items-center justify-between mb-6 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800">
               My Maintenance Requests
             </h1>
             <p className="text-sm text-slate-500 mt-1">
@@ -205,7 +205,7 @@ export default function SeeAllRequests() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             {/* Search */}
             <div className="relative">
               <input
@@ -215,8 +215,7 @@ export default function SeeAllRequests() {
                   setPage(1);
                 }}
                 placeholder="Search problem, category, building..."
-                className="pl-4 pr-10 py-2 rounded-lg border border-gray-200 bg-white shadow-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-200"
-              />
+                className="pl-4 pr-10 py-1.5 sm:py-2 rounded-lg border w-full sm:w-auto border-gray-200 bg-white shadow-sm w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-blue-200"/>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
                 ⌕
               </div>
@@ -229,7 +228,7 @@ export default function SeeAllRequests() {
                 setSortBy(e.target.value as any);
                 setPage(1);
               }}
-              className="py-2 pl-3 pr-6 rounded-lg border border-gray-200 bg-white shadow-sm"
+              className="py-1.5 sm:py-2 pl-3 pr-6 rounded-lg w-full sm:w-auto border border-gray-200 bg-white shadow-sm"
             >
               <option value="newest">Newest first</option>
               <option value="oldest">Oldest first</option>
@@ -239,7 +238,7 @@ export default function SeeAllRequests() {
 
             <button
               onClick={() => fetchRequests()}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow hover:scale-105 transition-transform"
+              className="px-4 py-1.5 sm:py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow hover:scale-105 transition-transform"
             >
               Refresh
             </button>
@@ -247,7 +246,7 @@ export default function SeeAllRequests() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white/60 p-2 rounded-lg inline-flex gap-2 mb-6 border border-white/30 shadow-sm">
+        <div className="bg-white/60 p-2 rounded-lg flex w-full gap-2 mb-6 border border-white/30 shadow-sm">
           {["all", "active", "completed"].map((tab) => (
             <button
               key={tab}
@@ -255,11 +254,11 @@ export default function SeeAllRequests() {
                 setActiveTab(tab as any);
                 setPage(1);
               }}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                activeTab === tab
-                  ? "bg-white shadow text-slate-900"
-                  : "text-slate-600"
-              }`}
+              className={`px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition-all flex-1 text-center ${
+  activeTab === tab
+    ? "bg-white shadow text-slate-900"
+    : "text-slate-600"
+}`}
             >
               {tab[0].toUpperCase() + tab.slice(1)}
             </button>
@@ -281,27 +280,28 @@ export default function SeeAllRequests() {
               onClick={() => handleCardClick(request.id)}
               className="bg-white rounded-2xl border border-gray-100 shadow hover:shadow-lg transition p-4 cursor-pointer"
             >
-              <div className="flex justify-between items-start mb-3">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl">
-                    {getCategoryIcon(request.category)}
+                    {getCategoryIcon(request.category ?? undefined)}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800 capitalize">
+                    <h3 className="font-semibold text-slate-800 capitalize break-words">
                       {request.category || "General"}
                     </h3>
                     <div className="text-xs text-gray-400">
-                      {request.created_at
+                      <span className="sm:hidden">{request.created_at
                         ? new Date(request.created_at).toLocaleString()
                         : "-"}
+                        </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="flex flex-col items-start sm:items-end text-left sm:text-right">
                   <div
                     className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(
-                      request.priority
+                      request.priority ?? undefined
                     )}`}
                   >
                     {request.priority || "low"}
@@ -317,7 +317,7 @@ export default function SeeAllRequests() {
               </p>
 
               <div className="flex justify-between text-sm text-gray-500">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1">
                   📍
                   <span className="font-medium text-slate-700">
                     {request.building || "-"}
@@ -327,7 +327,7 @@ export default function SeeAllRequests() {
 
                 <div>
                   {request.progress ? (
-                    <div className="flex items-center gap-2">
+                    <div className="hidden sm:flex items-center gap-2">
                       <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-blue-500"
